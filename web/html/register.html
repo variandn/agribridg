@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agri Bridge - User Registration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        input[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <form action="../jsp/register.jsp" method="post">
+        <h2>Create Your Agri Bridge Account</h2>
+
+        <label for="userType">Registering as</label>
+        <select id="userType" name="userType" required>
+            <option value="">-- Select User Type --</option>
+            <option value="buyer">Buyer</option>
+            <option value="seller">Seller</option>
+        </select>
+
+        <label for="firstname">First Name</label>
+        <input type="text" id="firstname" name="firstname" required>
+        
+        <label for="lastname">Last Name</label>
+        <input type="text" id="lastname" name="lastname" required>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone">
+
+        <label for="gender">Gender</label>
+        <select id="gender" name="gender">
+            <option value="">-- Select Gender --</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="3"></textarea>
+
+        <label for="country">Country</label>
+        <select id="country" name="country" required>
+            <option value="">-- Select Country --</option>
+             <option value="kenya">Uganda</option>
+            <option value="kenya">Kenya</option>
+            <option value="nigeria">Nigeria</option>
+            <option value="india">India</option>
+            <option value="uk">United Kingdom</option>
+            <option value="usa">United States</option>
+            <option value="other">Other</option>
+        </select>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+
+        <input type="submit" value="Register">
+    </form>
+</div>
+
+</body>
+</html>

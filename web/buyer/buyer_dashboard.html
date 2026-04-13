@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriBridge - Agricultural Marketplace</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      background-color:green;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+      font-size: 1rem;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .search-bar {
+      background-color: #ecf0f1;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+
+    .search-bar input {
+      padding: 0.5rem;
+      width: 60%;
+      max-width: 400px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .products-section {
+      padding: 2rem;
+    }
+
+    .category {
+      margin-bottom: 2rem;
+    }
+
+    .category h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .product-card {
+      background:white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .footer {
+      background-color: green;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .search-bar input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">AgriBridge</div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">cart</a>
+      <a href="#">About us</a>
+      <a href="#">Contact us</a>
+        <a href="../jsp/home.jsp">Log out</a>
+        
+    </nav>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" placeholder="Search agricultural products..." />
+  </div>
+
+  <!-- Product Categories -->
+  <section class="products-section">
+    
+    <div class="category">
+      <h2>Fruits</h2>
+      <div class="product-list">
+        <div class="product-card">Mangoes</div>
+        <div class="product-card">Bananas</div>
+        <div class="product-card">Oranges</div>
+        <div class="product-card">Pineapples</div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2>Vegetables</h2>
+      <div class="product-list">
+        <div class="product-card">Tomatoes</div>
+        <div class="product-card">Spinach</div>
+        <div class="product-card">Carrots</div>
+        <div class="product-card">Onions</div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2>Grains</h2>
+      <div class="product-list">
+        <div class="product-card">Maize</div>
+        <div class="product-card">Rice</div>
+        <div class="product-card">Millet</div>
+        <div class="product-card">Sorghum</div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2>Livestock</h2>
+      <div class="product-list">
+        <div class="product-card">Cattle</div>
+        <div class="product-card">Goats</div>
+        <div class="product-card">Sheep</div>
+        <div class="product-card">Chickens</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    &copy; 2025 Agribridge. All rights reserved | <a href="#" style="color:#ddd;">Privacy Policy</a> | <a href="#" style="color:#ddd;">Terms</a>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+agri-bridge/
+├── client/                         # React frontend
+│   ├── public/
+│   │   └── index.html              # Main HTML file
+│   ├── src/
+│   │   ├── components/             # React components organized by feature/role
+│   │   │   ├── Auth/               # Authentication pages
+│   │   │   │   ├── Login.js        # Login page component
+│   │   │   │   └── Registration.js # Registration page component
+│   │   │   ├── Buyer/              # Buyer-specific components
+│   │   │   │   ├── BuyerDashboard.js  # Main dashboard for buyers
+│   │   │   │   ├── ProductList.js       # Page to browse products
+│   │   │   │   ├── ProductDetails.js    # Detailed view of a product
+│   │   │   │   ├── DemandInsights.js    # Page displaying demand heatmap/data
+│   │   │   │   ├── OrderTracking.js     # Order tracking page
+│   │   │   │   ├── Wishlist.js          # Wishlist management
+│   │   │   │   └── Chat.js              # In-app chat with sellers
+│   │   │   ├── Seller/             # Seller-specific components
+│   │   │   │   ├── SellerDashboard.js   # Main dashboard for sellers
+│   │   │   │   ├── SellerDemandInsights.js  # Market demand view for sellers
+│   │   │   │   ├── AddProduct.js           # Product upload form
+│   │   │   │   ├── OrderManagement.js      # Manage incoming orders
+│   │   │   │   ├── Revenue.js              # Revenue and stats page
+│   │   │   │   └── SellerChat.js           # Messaging with buyers
+│   │   │   ├── Admin/              # Admin-specific components
+│   │   │   │   ├── AdminDashboard.js      # Main admin dashboard
+│   │   │   │   ├── UserManagement.js      # User verification and management
+│   │   │   │   ├── ProductModeration.js   # Approve/reject product listings
+│   │   │   │   ├── DemandAnalytics.js     # Analyze demand trends
+│   │   │   │   ├── PlatformStats.js       # Platform performance metrics
+│   │   │   │   └── DisputeResolution.js   # Resolve buyer-seller issues
+│   │   │   └── Common/             # Shared components
+│   │   │       ├── HomePage.js         # Landing page for Agri Bridge
+│   │   │       └── Payment.js          # Payment processing page
+│   │   ├── App.js                      # Main app component & router setup
+│   │   ├── index.js                    # App entry point
+│   │   ├── routes.js                   # Frontend routing configuration
+│   │   └── styles/                     # Global CSS files
+│   │       └── main.css
+│   ├── package.json                    # Frontend dependencies & scripts
+│   └── README.md
+├── server/                         # NodeJS backend
+│   ├── config/
+│   │   └── db.js                   # MySQL database connection configuration
+│   ├── controllers/                # Request handlers
+│   │   ├── authController.js       # Handles login/registration logic
+│   │   ├── buyerController.js      # Buyer-related endpoints
+│   │   ├── sellerController.js     # Seller-related endpoints
+│   │   └── adminController.js      # Admin-specific functionality
+│   ├── models/                     # Database models (using an ORM or raw queries)
+│   │   ├── User.js                 # User schema (buyer, seller, admin)
+│   │   ├── Product.js              # Product schema
+│   │   ├── Order.js                # Order schema
+│   │   └── Demand.js               # Demand data schema
+│   ├── routes/                     # API endpoint definitions
+│   │   ├── authRoutes.js           # Routes for authentication
+│   │   ├── buyerRoutes.js          # Routes for buyer actions
+│   │   ├── sellerRoutes.js         # Routes for seller actions
+│   │   └── adminRoutes.js          # Routes for admin tasks
+│   ├── middleware/                 # Express middleware (e.g., auth checks)
+│   │   └── authMiddleware.js
+│   ├── app.js                      # Main Express server file
+│   ├── package.json                # Backend dependencies & scripts
+│   └── README.md
+├── .gitignore                      # Ignore files for Git
+└── README.md                       # Project overview and instructions

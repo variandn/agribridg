@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+
+    <!-- RegisterServlet -->
+    <servlet>
+        <servlet-name>RegisterServlet</servlet-name>
+        <servlet-class>com.agribridg.servlet.RegisterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegisterServlet</servlet-name>
+        <url-pattern>/RegisterServlet</url-pattern>
+    </servlet-mapping>
+    
+    <!-- UploadProductServlet -->
+    <servlet>
+        <servlet-name>UploadProductServlet</servlet-name>
+        <servlet-class>Servlets.UploadProductServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadProductServlet</servlet-name>
+        <url-pattern>/Servlets/UploadProductServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- ImageServlet -->
+    <servlet>
+        <servlet-name>ImageServlet</servlet-name>
+        <servlet-class>Servlets.ImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ImageServlet</servlet-name>
+        <url-pattern>/getImage</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Welcome file -->
+    <welcome-file-list>
+        <welcome-file>/jsp/home.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>
