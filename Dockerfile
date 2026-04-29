@@ -1,5 +1,5 @@
-# Use official Tomcat 10.1 with JDK 23 (matches your project)
-FROM tomcat:10.1-jdk23-temurin
+# Use official Tomcat 10.1 with JDK 21 (latest LTS)
+FROM tomcat:10.1-jdk21-temurin
 
 # Remove default Tomcat apps
 RUN rm -rf /usr/local/tomcat/webapps/*
