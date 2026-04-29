@@ -1,11 +1,7 @@
-<%-- 
-    Document   : manage_product
-    Created on : Apr 15, 2025, 2:53:32 PM
-    Author     : Administrator
---%>
-
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.HtmlUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="auth_check.jsp" %>
 <html>
 <head>
     <title>My Products</title>
@@ -58,15 +54,11 @@
 <h2>My Uploaded Products</h2>
 
 <%
-    // Simulate logged-in seller
-    int sellerId = 20; // Replace with session.getAttribute("seller_id");
-
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
-        PreparedStatement ps = con.prepareStatement("SELECT * FROM products WHERE seller_id = ?");
-        ps.setInt(1, sellerId);
-        ResultSet rs = ps.executeQuery();
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        MongoCollection<Document> products = db.getCollection("products");
+
+        FindIterable<Document> results = products.find(Filters.eq("seller_id", sellerId));
 %>
 
 <table>
@@ -82,35 +74,34 @@
     </tr>
 
 <%
-    while(rs.next()) {
+    for (Document doc : results) {
+        String productId = doc.getObjectId("_id").toHexString();
 %>
     <tr>
-        <td><%= rs.getInt("product_id") %></td>
-        <td><%= rs.getString("product_name") %></td>
-        <td><%= rs.getString("category") %></td>
-        <td><%= rs.getString("description") %></td>
-        <td><%= rs.getInt("stock_quantity") %></td>
-        <td>$<%= rs.getDouble("price") %></td>
-        <td><%= rs.getTimestamp("created_at") %></td>
+        <td><%= HtmlUtils.escape(productId.substring(productId.length() - 6)) %></td>
+        <td><%= HtmlUtils.escape(doc.getString("product_name")) %></td>
+        <td><%= HtmlUtils.escape(doc.getString("category")) %></td>
+        <td><%= HtmlUtils.escape(doc.getString("description")) %></td>
+        <td><%= doc.getInteger("stock_quantity", 0) %></td>
+        <td>$<%= doc.get("price") %></td>
+        <td><%= doc.getDate("created_at") %></td>
         <td>
             <form action="edit_product.jsp" method="get" style="display:inline;">
-                <input type="hidden" name="id" value="<%= rs.getInt("product_id") %>"/>
+                <input type="hidden" name="id" value="<%= HtmlUtils.escape(productId) %>"/>
                 <input type="submit" value="Edit" class="action-btn edit-btn"/>
             </form>
             <form action="delete_product.jsp" method="post" style="display:inline;">
-                <input type="hidden" name="id" value="<%= rs.getInt("product_id") %>"/>
+                <input type="hidden" name="id" value="<%= HtmlUtils.escape(productId) %>"/>
                 <input type="submit" value="Delete" class="action-btn delete-btn" onclick="return confirm('Are you sure?');"/>
             </form>
         </td>
     </tr>
 <%
     }
-    rs.close();
-    ps.close();
-    con.close();
 } catch(Exception e) {
+    e.printStackTrace();
 %>
-    <p style="color:red; text-align:center;">Error: <%= e.getMessage() %></p>
+    <p style="color:red; text-align:center;">Error loading products. Please try again later.</p>
 <%
 }
 %>
@@ -118,7 +109,3 @@
 </table>
 </body>
 </html>
-
-
----
-

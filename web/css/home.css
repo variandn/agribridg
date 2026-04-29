@@ -164,13 +164,7 @@ footer {
     color: white;
 }
 
-    /* styles.css * for product_details/
-
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
+    /* Duplicate body styles removed — see lines 7-11 */
 
 /* Navigation */
 nav ul {

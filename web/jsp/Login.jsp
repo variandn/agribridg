@@ -1,4 +1,5 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.PasswordUtils, Servlets.HtmlUtils" %>
 <%@ page import="jakarta.servlet.http.*, jakarta.servlet.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -15,98 +16,93 @@
 
     if ("POST".equalsIgnoreCase(request.getMethod())) {
         if (identifier.isEmpty() || password.isEmpty()) {
-            message = "❌ Username/email and password are required.";
+            message = "Username/email and password are required.";
         } else {
-            Connection conn = null;
-            PreparedStatement pst = null;
-            ResultSet rs = null;
-
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                String dbURL = "jdbc:mysql://localhost:3306/agribridge";
-                String dbUser = "root";
-                String dbPass = "variandn4";
-                conn = DriverManager.getConnection(dbURL, dbUser, dbPass);
+                MongoDatabase db = MongoDBConnection.getDatabase();
 
-                // Validate user
-                String sql = "SELECT user_id, user_name, role FROM users WHERE (email = ? OR user_name = ?) AND password = ?";
-                pst = conn.prepareStatement(sql);
-                pst.setString(1, identifier);
-                pst.setString(2, identifier);
-                pst.setString(3, password);
-                rs = pst.executeQuery();
+                // Find user by identifier only (not password)
+                MongoCollection<Document> users = db.getCollection("users");
+                Document user = users.find(Filters.or(
+                    Filters.eq("email", identifier),
+                    Filters.eq("user_name", identifier)
+                )).first();
 
-                if (rs.next()) {
-                    userId = rs.getString("user_id");
-                    userName = rs.getString("user_name");
-                    role = rs.getString("role");
+                if (user != null) {
+                    String storedPassword = user.getString("password");
+                    boolean authenticated = false;
 
-                    // Invalidate old sessions in DB
-                    String deactivateSQL = "UPDATE session SET is_active = FALSE WHERE user_id = ?";
-                    PreparedStatement deactivateStmt = conn.prepareStatement(deactivateSQL);
-                    deactivateStmt.setString(1, userId);
-                    deactivateStmt.executeUpdate();
-                    deactivateStmt.close();
+                    if (PasswordUtils.isHashed(storedPassword)) {
+                        // Password is already hashed — verify against hash
+                        authenticated = PasswordUtils.verifyPassword(password, storedPassword);
+                    } else {
+                        // Legacy plaintext password — verify and migrate to hash
+                        if (password.equals(storedPassword)) {
+                            authenticated = true;
+                            // Migrate: replace plaintext with hash
+                            String hashed = PasswordUtils.hashPassword(password);
+                            users.updateOne(
+                                Filters.eq("_id", user.getObjectId("_id")),
+                                Updates.set("password", hashed)
+                            );
+                        }
+                    }
 
-                    // Invalidate session if exists
-                    if (session != null) session.invalidate();
+                    if (authenticated) {
+                        userId = user.getObjectId("_id").toHexString();
+                        userName = user.getString("user_name");
+                        role = user.getString("role");
 
-                    // Create new session
-                    session = request.getSession(true);
-                    String sessionToken = java.util.UUID.randomUUID().toString();
+                        // Invalidate old sessions in DB
+                        MongoCollection<Document> sessions = db.getCollection("sessions");
+                        sessions.updateMany(
+                            Filters.eq("user_id", userId),
+                            Updates.set("is_active", false)
+                        );
 
-                    session.setAttribute("userId", userId);
-                    session.setAttribute("userType", role);
-                    session.setAttribute("username", userName);
-                    session.setAttribute("sessionToken", sessionToken);
-                    session.setAttribute("usernameOrEmail", identifier);
+                        // Invalidate HTTP session if exists
+                        if (session != null) session.invalidate();
 
-                    // Store new session in DB
-                    String insertSessionSQL = "INSERT INTO session (user_id, role, session_token, is_active) VALUES (?, ?, ?, ?)";
-                    PreparedStatement sessionStmt = conn.prepareStatement(insertSessionSQL);
-                    sessionStmt.setString(1, userId);
-                    sessionStmt.setString(2, role);
-                    sessionStmt.setString(3, sessionToken);
-                    sessionStmt.setBoolean(4, true);
-                    sessionStmt.executeUpdate();
-                    sessionStmt.close();
+                        // Create new HTTP session
+                        session = request.getSession(true);
+                        String sessionToken = java.util.UUID.randomUUID().toString();
 
-                    redirecting = true;
-                    
-                    
-                    if ("buyer".equalsIgnoreCase(role)) {
-                    response.sendRedirect(request.getContextPath() + "/buyer/buyer_dashboard.html");//recognised by tomcat
-                    //("../buyer/buyer_dashboard.jsp");normakl
-                    
+                        session.setAttribute("userId", userId);
+                        session.setAttribute("userType", role);
+                        session.setAttribute("username", userName);
+                        session.setAttribute("sessionToken", sessionToken);
+                        session.setAttribute("usernameOrEmail", identifier);
 
-                    } else if ("seller".equalsIgnoreCase(role)) {
-                    session.setAttribute("seller_id", userId); // Store seller_id as user_id
-                    response.sendRedirect (request.getContextPath() + "/seller/seller_home.jsp");
-                    //("../seller/seller_home.jsp");
-              
-                    } else if ("admin".equalsIgnoreCase(role)) {
-                     response.sendRedirect(request.getContextPath() + "../admin/dashboard.jsp");
+                        // Store new session in MongoDB
+                        Document sessionDoc = new Document("user_id", userId)
+                                .append("role", role)
+                                .append("session_token", sessionToken)
+                                .append("is_active", true)
+                                .append("login_time", new java.util.Date());
+                        sessions.insertOne(sessionDoc);
 
-                     } else {
-                      message = "⚠️ Unknown role. Contact administrator.";
-                   }
+                        redirecting = true;
 
+                        if ("buyer".equalsIgnoreCase(role)) {
+                            response.sendRedirect(request.getContextPath() + "/buyer/buyer_dashboard.html");
+                        } else if ("seller".equalsIgnoreCase(role)) {
+                            session.setAttribute("seller_id", userId);
+                            response.sendRedirect(request.getContextPath() + "/seller/seller_home.jsp");
+                        } else if ("admin".equalsIgnoreCase(role)) {
+                            response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+                        } else {
+                            message = "Unknown role. Contact administrator.";
+                        }
+                    } else {
+                        message = "Invalid credentials.";
+                    }
                 } else {
-                
-                    message = "❌ Invalid credentials.";
+                    message = "Invalid credentials.";
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                message = "❌ Login error: " + e.getMessage();
-            } finally {
-                try {
-                    if (rs != null) rs.close();
-                    if (pst != null) pst.close();
-                    if (conn != null) conn.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                message = "A login error occurred. Please try again later.";
             }
         }
     }
@@ -225,12 +221,12 @@
         <button type="submit" class="btn">Login</button>
 
         <div class="form-footer">
-            <p>Don't have an account? <a href="../html/register.html">Register</a></p>
+            <p>Don't have an account? <a href="register.jsp">Register</a></p>
         </div>
     </form>
 
     <% if (!message.isEmpty()) { %>
-        <div class="message"><%= message %></div>
+        <div class="message"><%= HtmlUtils.escape(message) %></div>
     <% } %>
 </div>
 

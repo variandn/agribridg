@@ -1,0 +1,11 @@
+.git
+.gitignore
+*.md
+nbproject
+build
+dist
+test
+upload
+index.html
+Dockerfile.dockerfile
+*.txt

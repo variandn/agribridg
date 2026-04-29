@@ -1,5 +1,7 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.HtmlUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="auth_check.jsp" %>
 <%@ include file="navbar.jsp" %>
 <html>
 <head>
@@ -44,15 +46,11 @@
 <h2>Inventory Overview</h2>
 
 <%
-    int sellerId = 1; // Replace with session seller ID
-
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        MongoCollection<Document> products = db.getCollection("products");
 
-        PreparedStatement ps = con.prepareStatement("SELECT product_name, quantity FROM products WHERE seller_id = ?");
-        ps.setInt(1, sellerId);
-        ResultSet rs = ps.executeQuery();
+        FindIterable<Document> results = products.find(Filters.eq("seller_id", sellerId));
 %>
 
 <table>
@@ -63,13 +61,13 @@
     </tr>
 
 <%
-    while(rs.next()) {
-        String productName = rs.getString("product_name");
-        int quantity = rs.getInt("quantity");
+    for (Document doc : results) {
+        String productName = doc.getString("product_name");
+        int quantity = doc.getInteger("stock_quantity", 0);
         boolean isLow = quantity < 10;
 %>
     <tr>
-        <td><%= productName %></td>
+        <td><%= HtmlUtils.escape(productName) %></td>
         <td><%= quantity %></td>
         <td class="<%= isLow ? "low-stock" : "ok-stock" %>">
             <%= isLow ? "Low Stock" : "In Stock" %>
@@ -77,12 +75,10 @@
     </tr>
 <%
     }
-    rs.close();
-    ps.close();
-    con.close();
 } catch(Exception e) {
+    e.printStackTrace();
 %>
-    <p style="color:red; text-align:center;">Error: <%= e.getMessage() %></p>
+    <p style="color:red; text-align:center;">Error loading inventory. Please try again later.</p>
 <%
 }
 %>

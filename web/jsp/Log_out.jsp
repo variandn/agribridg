@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, Servlets.MongoDBConnection" %>
 <%@ page import="jakarta.servlet.http.*, jakarta.servlet.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -16,32 +16,23 @@
         String sessionToken = (String) currentSession.getAttribute("sessionToken");
 
         if (userId != null && sessionToken != null) {
-            Connection conn = null;
-            PreparedStatement pst = null;
-
             try {
-                // Load MySQL JDBC driver
-                Class.forName("com.mysql.cj.jdbc.Driver");
+                MongoDatabase db = MongoDBConnection.getDatabase();
+                MongoCollection<Document> sessions = db.getCollection("sessions");
 
-                // Connect to the database
-                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
-
-                // Update session table to mark this session as logged out
-                String sql = "UPDATE session SET logout_time = CURRENT_TIMESTAMP, is_active = FALSE WHERE user_id = ? AND session_token = ?";
-                pst = conn.prepareStatement(sql);
-                pst.setString(1, userId);
-                pst.setString(2, sessionToken);
-                pst.executeUpdate();
-
+                // Update session to mark as logged out
+                sessions.updateOne(
+                    Filters.and(
+                        Filters.eq("user_id", userId),
+                        Filters.eq("session_token", sessionToken)
+                    ),
+                    Updates.combine(
+                        Updates.set("logout_time", new java.util.Date()),
+                        Updates.set("is_active", false)
+                    )
+                );
             } catch (Exception e) {
-                e.printStackTrace(); // Log error
-            } finally {
-                try {
-                    if (pst != null) pst.close();
-                    if (conn != null) conn.close();
-                } catch (Exception e) {
-                    e.printStackTrace(); // Log closing error
-                }
+                e.printStackTrace();
             }
 
             // Invalidate the session to log out the user

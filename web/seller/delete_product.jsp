@@ -1,39 +1,43 @@
-<%-- 
-    Document   : delete_product
-    Created on : Apr 15, 2025, 2:59:07 PM
-    Author     : Administrator
---%>
-
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="auth_check.jsp" %>
 <html>
 <head>
     <title>Delete Product</title>
 </head>
 <body>
 <%
-    int id = Integer.parseInt(request.getParameter("id"));
+    String id = request.getParameter("id");
+
+    // Only allow POST for deletion (prevent accidental GET deletions)
+    if (!"POST".equalsIgnoreCase(request.getMethod())) {
+        response.sendRedirect("manage_product.jsp");
+        return;
+    }
 
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/agri_ride", "root", "yourpassword");
-        PreparedStatement ps = con.prepareStatement("DELETE FROM products WHERE id=?");
-        ps.setInt(1, id);
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        MongoCollection<Document> products = db.getCollection("products");
 
-        int deleted = ps.executeUpdate();
+        // Delete only if product belongs to the current seller (authorization check)
+        long deleted = products.deleteOne(
+            Filters.and(
+                Filters.eq("_id", new ObjectId(id)),
+                Filters.eq("seller_id", sellerId)
+            )
+        ).getDeletedCount();
+
         if (deleted > 0) {
-            response.sendRedirect("my_products.jsp");
+            response.sendRedirect("manage_product.jsp");
         } else {
 %>
-            <p style="color:red; text-align:center;">Product not found or could not be deleted.</p>
+            <p style="color:red; text-align:center;">Product not found or you don't have permission to delete it.</p>
 <%
         }
-
-        ps.close();
-        con.close();
     } catch (Exception e) {
+        e.printStackTrace();
 %>
-        <p style="color:red; text-align:center;">Error: <%= e.getMessage() %></p>
+        <p style="color:red; text-align:center;">Error deleting product. Please try again later.</p>
 <%
     }
 %>

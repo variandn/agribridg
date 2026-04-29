@@ -1,8 +1,9 @@
-<%@ page import="java.sql.*, jakarta.servlet.*, jakarta.servlet.http.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.HtmlUtils" %>
+<%@ page import="jakarta.servlet.*, jakarta.servlet.http.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    //HttpSession session = request.getSession(false);
-    Integer senderId = (session != null) ? (Integer) session.getAttribute("userId") : null;
+    String senderId = (session != null) ? (String) session.getAttribute("userId") : null;
 
     if (senderId == null) {
         response.sendRedirect("Login.jsp?message=Please login to chat.");
@@ -12,50 +13,38 @@
     String supplierIdStr = request.getParameter("id");
     String productIdStr = request.getParameter("productId");
 
-    int supplierId = Integer.parseInt(supplierIdStr);
-    int productId = Integer.parseInt(productIdStr);
-
     // Handle message submission
     String message = request.getParameter("message");
     if (message != null && !message.trim().isEmpty()) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
+            MongoDatabase db = MongoDBConnection.getDatabase();
+            MongoCollection<Document> messages = db.getCollection("messages");
 
-            PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO chats (sender_id, receiver_id, product_id, message) VALUES (?, ?, ?, ?)");
-            insertStmt.setInt(1, senderId);
-            insertStmt.setInt(2, supplierId);
-            insertStmt.setInt(3, productId);
-            insertStmt.setString(4, message);
-            insertStmt.executeUpdate();
-
-            conn.close();
+            Document msgDoc = new Document("sender_id", senderId)
+                    .append("receiver_id", supplierIdStr)
+                    .append("product_id", productIdStr)
+                    .append("message", message)
+                    .append("timestamp", new java.util.Date());
+            messages.insertOne(msgDoc);
         } catch (Exception e) {
-            out.println("Error sending message: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     // Load chat history
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        MongoCollection<Document> messagesCol = db.getCollection("messages");
 
-        stmt = conn.prepareStatement(
-            "SELECT * FROM messages WHERE product_id = ? AND " +
-            "((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) " +
-            "ORDER BY timestamp ASC"
-        );
-        stmt.setInt(1, productId);
-        stmt.setInt(2, senderId);
-        stmt.setInt(3, supplierId);
-        stmt.setInt(4, supplierId);
-        stmt.setInt(5, senderId);
-
-        rs = stmt.executeQuery();
+        FindIterable<Document> chatHistory = messagesCol.find(
+            Filters.and(
+                Filters.eq("product_id", productIdStr),
+                Filters.or(
+                    Filters.and(Filters.eq("sender_id", senderId), Filters.eq("receiver_id", supplierIdStr)),
+                    Filters.and(Filters.eq("sender_id", supplierIdStr), Filters.eq("receiver_id", senderId))
+                )
+            )
+        ).sort(Sorts.ascending("timestamp"));
 %>
 
 <html>
@@ -109,23 +98,23 @@
 <div class="chat-box">
     <h2>Chat with Supplier</h2>
 
-    <% while (rs.next()) {
-        int sender = rs.getInt("sender_id");
-        String msg = rs.getString("message");
+    <% for (Document doc : chatHistory) {
+        String sender = doc.getString("sender_id");
+        String msg = doc.getString("message");
     %>
         <div class="message">
-            <span class="<%= (sender == senderId) ? "sender" : "receiver" %>">
-                <%= (sender == senderId) ? "You" : "Supplier" %>:
+            <span class="<%= (sender.equals(senderId)) ? "sender" : "receiver" %>">
+                <%= (sender.equals(senderId)) ? "You" : "Supplier" %>:
             </span>
-            <span><%= msg %></span>
+            <span><%= HtmlUtils.escape(msg) %></span>
         </div>
     <% } %>
 
     <!-- Message form -->
     <form method="post" class="chat-form">
         <textarea name="message" placeholder="Type your message here..." required></textarea>
-        <input type="hidden" name="supplierId" value="<%= supplierId %>" />
-        <input type="hidden" name="productId" value="<%= productId %>" />
+        <input type="hidden" name="id" value="<%= HtmlUtils.escape(supplierIdStr) %>" />
+        <input type="hidden" name="productId" value="<%= HtmlUtils.escape(productIdStr) %>" />
         <button type="submit">Send</button>
     </form>
 </div>
@@ -133,8 +122,8 @@
 </html>
 
 <%
-    conn.close();
     } catch (Exception e) {
-        out.println("Error loading messages: " + e.getMessage());
+        e.printStackTrace();
+        out.println("<p>Error loading messages. Please try again later.</p>");
     }
 %>

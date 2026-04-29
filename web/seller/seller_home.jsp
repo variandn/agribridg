@@ -1,4 +1,5 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.HtmlUtils" %>
 <%@ page import="jakarta.servlet.http.*, jakarta.servlet.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -9,21 +10,22 @@
 
     if (sessionToken != null && userId != null) {
         try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
-            PreparedStatement ps = conn.prepareStatement("SELECT session_token FROM session WHERE user_id = ? AND is_active = 1");
-            ps.setString(1, userId);
-            ResultSet rs = ps.executeQuery();
+            MongoDatabase db = MongoDBConnection.getDatabase();
+            MongoCollection<Document> sessions = db.getCollection("sessions");
 
-            if (rs.next()) {
-                String dbSessionToken = rs.getString("session_token");
+            Document sessionDoc = sessions.find(
+                Filters.and(
+                    Filters.eq("user_id", userId),
+                    Filters.eq("is_active", true)
+                )
+            ).first();
+
+            if (sessionDoc != null) {
+                String dbSessionToken = sessionDoc.getString("session_token");
                 if (sessionToken.equals(dbSessionToken)) {
                     sessionValid = true;
                 }
             }
-
-            rs.close();
-            ps.close();
-            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,20 +52,11 @@
         return;
     }
 
-    int totalProducts = 0;
+    long totalProducts = 0;
     try {
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
-        PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM products WHERE seller_id = ?");
-        ps.setString(1, sellerId);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            totalProducts = rs.getInt(1);
-        }
-
-        rs.close();
-        ps.close();
-        conn.close();
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        MongoCollection<Document> products = db.getCollection("products");
+        totalProducts = products.countDocuments(Filters.eq("seller_id", sellerId));
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -133,23 +126,17 @@
 <body>
 
 <div class="header">
-    <h1>Welcome, <%= username %>!</h1>
-    <p>Seller Dashboard (Seller ID: <%= sellerId %>)</p>
+    <h1>Welcome, <%= HtmlUtils.escape(username) %>!</h1>
+    <p>Seller Dashboard</p>
 </div>
 
 <div class="nav-bar">
     <a href="${pageContext.request.contextPath}/seller/seller_home.jsp">Home</a>
     <a href="${pageContext.request.contextPath}/jsp/product_upload.jsp">Upload Product</a>
-    <a href="${pageContext.request.contextPath}#">View Products</a>
+    <a href="${pageContext.request.contextPath}/seller/manage_product.jsp">View Products</a>
     <a href="${pageContext.request.contextPath}/seller/inventory.jsp">Inventory</a>
     <a href="${pageContext.request.contextPath}/seller/chat.jsp">Chat with Clients</a>
     <a href="${pageContext.request.contextPath}/jsp/Log_out.jsp">Logout</a>
-   <!-- <a href="seller_home.jsp">Home</a>
-    <a href="../jsp/product_upload.jsp">Upload Product</a>
-    <a href="view_products.jsp">View Products</a>
-    <a href="inventory.jsp">Inventory</a>
-    <a href="chat.jsp">Chat with Clients</a>
-    <a href="../jsp/Log_out.jsp">Logout</a>-->
 </div>
 
 <div class="content">

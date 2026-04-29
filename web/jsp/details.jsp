@@ -1,17 +1,13 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.HtmlUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>AgriBridge | Home</title>
-    <!--<link rel="stylesheet" href="../css/home.css" />-->
+    <title>AgriBridge | Product Details</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
-    
-
 </head>
 <body>
     
@@ -22,89 +18,67 @@
             <li><a href="cart.jsp">Cart</a></li>
             <li><a href="about.jsp">About Us</a></li>
             <li><a href="contact.jsp">Contact Us</a></li>
-            <c:choose>
-                <c:when test="${empty loggedInUser}">
-               <li> <a href="${pageContext.request.contextPath}/jsp/Login.jsp">Login</a></li>
-                    <!--<li><a href="login.jsp">Login</a></li>-->
-                </c:when>
-                <c:otherwise>
-                    <li><a href="logout.jsp">Logout</a></li>
-                </c:otherwise>
-            </c:choose>
+            <% if (session.getAttribute("userId") == null) { %>
+                <li><a href="<%= request.getContextPath() %>/jsp/Login.jsp">Login</a></li>
+            <% } else { %>
+                <li><a href="<%= request.getContextPath() %>/jsp/Log_out.jsp">Logout</a></li>
+            <% } %>
         </ul>
     </nav>
 
 <section class="products">
-    <!--<h2><%= request.getParameter("query") != null ? "Search Results" : "Featured Products" %></h2>-->
     <div class="product-grid">
         <%
             String id = request.getParameter("productId");
-            //String query = request.getParameter("query");
-            Connection conn = null;
-            PreparedStatement pst = null;
-            ResultSet rs = null;
 
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/agribridge", "root", "variandn4");
+                MongoDatabase db = MongoDBConnection.getDatabase();
+                MongoCollection<Document> products = db.getCollection("products");
 
-                String sql = "SELECT * FROM products WHERE product_id = ?";
-                    pst = conn.prepareStatement(sql);
-                    pst.setString(1, id);
-                  
-                rs = pst.executeQuery();
+                Document doc = null;
+                if (id != null && !id.isEmpty()) {
+                    doc = products.find(Filters.eq("_id", new ObjectId(id))).first();
+                }
 
-                if (rs.next()) {
-                    String name = rs.getString("product_name");
-                    String price = rs.getString("price");
-                    String productId = rs.getString("product_id"); // Unique ID
-                    String description = rs.getString("description");
-                    String category = rs.getString("category");
-                    String stock_quantity = rs.getString("stock_quantity");
+                if (doc != null) {
+                    String name = doc.getString("product_name");
+                    Object priceObj = doc.get("price");
+                    String price = (priceObj != null) ? priceObj.toString() : "0";
+                    String productId = doc.getObjectId("_id").toHexString();
+                    String description = doc.getString("description");
+                    String category = doc.getString("category");
+                    Object stockObj = doc.get("stock_quantity");
+                    String stockQuantity = (stockObj != null) ? stockObj.toString() : "0";
         %>
         
     <!-- Product Details Section -->
     <div class="product-details">
-        <h1><%= name %></h1>
-         <img src="<%= request.getContextPath() %>/getImage?id=<%= productId %>"
-             alt="<%= name %>"
+        <h1><%= HtmlUtils.escape(name) %></h1>
+         <img src="<%= request.getContextPath() %>/getImage?id=<%= HtmlUtils.escape(productId) %>"
+             alt="<%= HtmlUtils.escape(name) %>"
              onerror="this.onerror=null; this.src='<%= request.getContextPath() %>/assets/default-product.png';" />
         <div class="product-info">
-            <img src="${pageContext.request.contextPath}/agribridg/getImage?id=${product.id}" alt="${product.name}" />
-            
-            <p><strong>Price:</strong> UGX <%= price %></p>
-            <p><strong>Description:</strong> <%= description %></p>
-            <p><strong>Category:</strong> <%= category %></p>
-             <p><strong>stock_quantity:</strong> <%= stock_quantity %></p>
+            <p><strong>Price:</strong> UGX <%= HtmlUtils.escape(price) %></p>
+            <p><strong>Description:</strong> <%= HtmlUtils.escape(description) %></p>
+            <p><strong>Category:</strong> <%= HtmlUtils.escape(category) %></p>
+             <p><strong>Stock Quantity:</strong> <%= HtmlUtils.escape(stockQuantity) %></p>
         </div>
         
          <!-- Contact Supplier Button -->
 <form method="post" action="ContactSupplier.jsp" class="contact-supplier-form">
-    <input type="hidden" name="supplierId" value="<%= id %>" />
-    <input type="hidden" name="productId" value="<%= productId %>" />
+    <input type="hidden" name="supplierId" value="<%= HtmlUtils.escape(doc.getString("seller_id")) %>" />
+    <input type="hidden" name="productId" value="<%= HtmlUtils.escape(productId) %>" />
     <button type="submit">Contact Supplier</button>
 </form>
     </div>
-        
-        
-  
-
-
-
- 
 
         <%
+                } else {
+                    out.println("<p>Product not found.</p>");
                 }
             } catch (Exception e) {
-                out.println("<p>Error loading products: " + e.getMessage() + "</p>");
-            } finally {
-                try {
-                    if (rs != null) rs.close();
-                    if (pst != null) pst.close();
-                    if (conn != null) conn.close();
-                } catch (Exception ex) {
-                    out.println("<p>Cleanup error: " + ex.getMessage() + "</p>");
-                }
+                e.printStackTrace();
+                out.println("<p>Error loading product. Please try again later.</p>");
             }
         %>
     </div>

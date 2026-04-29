@@ -1,11 +1,7 @@
-<%-- 
-    Document   : edit_product
-    Created on : Apr 15, 2025, 2:57:52 PM
-    Author     : Administrator
---%>
-
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.HtmlUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="auth_check.jsp" %>
 <html>
 <head>
     <title>Edit Product</title>
@@ -48,77 +44,88 @@
 <div class="container">
     <h2>Edit Product</h2>
 <%
-    int id = Integer.parseInt(request.getParameter("id"));
-    String name = "", category = "", desc = "", image = "";
+    String id = request.getParameter("id");
+    String name = "", category = "", desc = "";
     int qty = 0;
     double price = 0;
 
     if (request.getMethod().equalsIgnoreCase("post")) {
+        // Handle form submission - update product
         name = request.getParameter("product_name");
         category = request.getParameter("category");
         desc = request.getParameter("description");
         qty = Integer.parseInt(request.getParameter("quantity"));
         price = Double.parseDouble(request.getParameter("price"));
-        image = request.getParameter("image_url");
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/agri_ride", "root", "yourpassword");
-            PreparedStatement ps = con.prepareStatement(
-                "UPDATE products SET product_name=?, category=?, description=?, quantity=?, price=?, image_url=? WHERE id=?"
-            );
-            ps.setString(1, name);
-            ps.setString(2, category);
-            ps.setString(3, desc);
-            ps.setInt(4, qty);
-            ps.setDouble(5, price);
-            ps.setString(6, image);
-            ps.setInt(7, id);
+            MongoDatabase db = MongoDBConnection.getDatabase();
+            MongoCollection<Document> products = db.getCollection("products");
 
-            int updated = ps.executeUpdate();
-            if (updated > 0) {
+            // Only update if the product belongs to this seller
+            long modified = products.updateOne(
+                Filters.and(
+                    Filters.eq("_id", new ObjectId(id)),
+                    Filters.eq("seller_id", sellerId)
+                ),
+                Updates.combine(
+                    Updates.set("product_name", name),
+                    Updates.set("category", category),
+                    Updates.set("description", desc),
+                    Updates.set("stock_quantity", qty),
+                    Updates.set("price", price)
+                )
+            ).getModifiedCount();
+
+            if (modified > 0) {
 %>
-                <p style="color:green; text-align:center;">Product updated successfully.</p>
+            <p style="color:green; text-align:center;">Product updated successfully.</p>
+<%
+            } else {
+%>
+            <p style="color:red; text-align:center;">Product not found or you don't have permission to edit it.</p>
 <%
             }
-            ps.close();
-            con.close();
         } catch(Exception e) {
+            e.printStackTrace();
 %>
-            <p style="color:red; text-align:center;">Error: <%= e.getMessage() %></p>
+            <p style="color:red; text-align:center;">Error updating product. Please try again later.</p>
 <%
         }
     } else {
+        // Load product data for editing — verify ownership
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/agri_ride", "root", "yourpassword");
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM products WHERE id=?");
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            MongoDatabase db = MongoDBConnection.getDatabase();
+            MongoCollection<Document> products = db.getCollection("products");
 
-            if (rs.next()) {
-                name = rs.getString("product_name");
-                category = rs.getString("category");
-                desc = rs.getString("description");
-                qty = rs.getInt("quantity");
-                price = rs.getDouble("price");
-                image = rs.getString("image_url");
-            }
+            Document doc = products.find(Filters.and(
+                Filters.eq("_id", new ObjectId(id)),
+                Filters.eq("seller_id", sellerId)
+            )).first();
 
-            rs.close();
-            ps.close();
-            con.close();
-        } catch(Exception e) {
+            if (doc != null) {
+                name = doc.getString("product_name") != null ? doc.getString("product_name") : "";
+                category = doc.getString("category") != null ? doc.getString("category") : "";
+                desc = doc.getString("description") != null ? doc.getString("description") : "";
+                qty = doc.getInteger("stock_quantity", 0);
+                Object priceObj = doc.get("price");
+                price = (priceObj != null) ? Double.parseDouble(priceObj.toString()) : 0;
+            } else {
 %>
-            <p style="color:red; text-align:center;">Error: <%= e.getMessage() %></p>
+            <p style="color:red; text-align:center;">Product not found or you don't have permission to edit it.</p>
+<%
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+%>
+            <p style="color:red; text-align:center;">Error loading product. Please try again later.</p>
 <%
         }
     }
 %>
 
-    <form method="post" action="edit_product.jsp?id=<%= id %>">
+    <form method="post" action="edit_product.jsp?id=<%= HtmlUtils.escape(id) %>">
         <label>Product Name:</label>
-        <input type="text" name="product_name" value="<%= name %>" required>
+        <input type="text" name="product_name" value="<%= HtmlUtils.escape(name) %>" required>
 
         <label>Category:</label>
         <select name="category" required>
@@ -130,21 +137,16 @@
         </select>
 
         <label>Description:</label>
-        <textarea name="description" required><%= desc %></textarea>
+        <textarea name="description" required><%= HtmlUtils.escape(desc) %></textarea>
 
         <label>Quantity:</label>
-        <input type="number" name="quantity" value="<%= qty %>" required>
+        <input type="number" name="quantity" value="<%= qty %>" min="0" required>
 
         <label>Price:</label>
-        <input type="number" step="0.01" name="price" value="<%= price %>" required>
-
-        <label>Image URL:</label>
-        <input type="text" name="image_url" value="<%= image %>">
+        <input type="number" step="0.01" name="price" value="<%= price %>" min="0" required>
 
         <input type="submit" value="Update Product">
     </form>
 </div>
 </body>
 </html>
-
-

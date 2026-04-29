@@ -1,0 +1,29 @@
+# Build output
+build/
+dist/
+
+# NetBeans
+nbproject/private/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+*.env
+
+# User uploads (runtime content)
+web/uploads/*
+!web/uploads/.gitkeep
+
+# Legacy dead code
+upload/
+
+# Project structure notes
+agribridge project structure.txt

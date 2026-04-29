@@ -1,5 +1,7 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection" %>
+<%@ page import="Servlets.HtmlUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="auth_check.jsp" %>
 <%@ include file="navbar.jsp" %>
 <html>
 <head>
@@ -60,8 +62,7 @@
     <h2>Chat with Support</h2>
 
 <%
-    int sellerId = 1; // Simulated seller ID
-    int supportId = 0; // We'll use 0 for system support
+    String supportId = "support"; // Use "support" as the support ID
 
     // Handle new message submission
     if ("POST".equalsIgnoreCase(request.getMethod())) {
@@ -69,20 +70,18 @@
 
         if (msg != null && !msg.trim().isEmpty()) {
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/agri_ride", "root", "yourpassword");
+                MongoDatabase db = MongoDBConnection.getDatabase();
+                MongoCollection<Document> messages = db.getCollection("messages");
 
-                PreparedStatement ps = con.prepareStatement("INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)");
-                ps.setInt(1, sellerId);
-                ps.setInt(2, supportId);
-                ps.setString(3, msg);
-                ps.executeUpdate();
-
-                ps.close();
-                con.close();
+                Document msgDoc = new Document("sender_id", sellerId)
+                        .append("receiver_id", supportId)
+                        .append("message", msg)
+                        .append("sent_at", new java.util.Date());
+                messages.insertOne(msgDoc);
             } catch(Exception e) {
+                e.printStackTrace();
 %>
-                <p style="color:red;">Error: <%= e.getMessage() %></p>
+                <p style="color:red;">Error sending message. Please try again.</p>
 <%
             }
         }
@@ -90,35 +89,30 @@
 
     // Fetch message history
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/agri_ride", "root", "yourpassword");
+        MongoDatabase db = MongoDBConnection.getDatabase();
+        MongoCollection<Document> messagesCol = db.getCollection("messages");
 
-        PreparedStatement ps = con.prepareStatement(
-            "SELECT * FROM messages WHERE (sender_id=? AND receiver_id=?) OR (sender_id=? AND receiver_id=?) ORDER BY sent_at ASC"
-        );
-        ps.setInt(1, sellerId);
-        ps.setInt(2, supportId);
-        ps.setInt(3, supportId);
-        ps.setInt(4, sellerId);
-        ResultSet rs = ps.executeQuery();
+        FindIterable<Document> chatHistory = messagesCol.find(
+            Filters.or(
+                Filters.and(Filters.eq("sender_id", sellerId), Filters.eq("receiver_id", supportId)),
+                Filters.and(Filters.eq("sender_id", supportId), Filters.eq("receiver_id", sellerId))
+            )
+        ).sort(Sorts.ascending("sent_at"));
 
-        while(rs.next()) {
-            boolean isSender = rs.getInt("sender_id") == sellerId;
+        for (Document doc : chatHistory) {
+            boolean isSender = sellerId.equals(doc.getString("sender_id"));
 %>
             <div class="message <%= isSender ? "sent" : "received" %>">
                 <strong><%= isSender ? "You" : "Support" %>:</strong>
-                <%= rs.getString("message") %> <br>
-                <small><%= rs.getTimestamp("sent_at") %></small>
+                <%= HtmlUtils.escape(doc.getString("message")) %> <br>
+                <small><%= doc.getDate("sent_at") %></small>
             </div>
 <%
         }
-
-        rs.close();
-        ps.close();
-        con.close();
     } catch(Exception e) {
+        e.printStackTrace();
 %>
-        <p style="color:red;">Error: <%= e.getMessage() %></p>
+        <p style="color:red;">Error loading messages. Please try again later.</p>
 <%
     }
 %>
@@ -134,4 +128,3 @@
 
 </body>
 </html>
-

@@ -1,18 +1,17 @@
-package Servlets;  // Updated package name
+package Servlets;
 
 import java.io.*;
-import java.sql.*;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import org.bson.types.Binary;
 
 @WebServlet("/servlets/UploadProductServlet")
 @MultipartConfig(maxFileSize = 16177215) // 16MB max for file upload
 public class UploadProductServlet extends HttpServlet {
-
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/agribridge";
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "variandn4";  // <-- Your database password
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -26,23 +25,17 @@ public class UploadProductServlet extends HttpServlet {
 
         // Retrieve file part
         Part filePart = request.getPart("productImage");
-        InputStream imageStream = null;
-        if (filePart != null) {
-            imageStream = filePart.getInputStream();
+        byte[] imageBytes = null;
+        if (filePart != null && filePart.getSize() > 0) {
+            imageBytes = filePart.getInputStream().readAllBytes();
         }
 
-        // Get seller ID from session (assuming it's stored during login)
+        // Get seller ID from session (stored during login as a String)
         HttpSession session = request.getSession(false);
-        Integer sellerId = null;
-        
-        // Safely parse userId as Integer if it's a String
+        String sellerId = null;
+
         if (session != null && session.getAttribute("userId") != null) {
-            try {
-                sellerId = Integer.parseInt(session.getAttribute("userId").toString());
-            } catch (NumberFormatException e) {
-                // Handle the case where the userId is not a valid Integer
-                sellerId = null;
-            }
+            sellerId = session.getAttribute("userId").toString();
         }
 
         String message = "";
@@ -54,47 +47,33 @@ public class UploadProductServlet extends HttpServlet {
             return;
         }
 
-        // Insert into database
+        // Insert into MongoDB
         try {
-            DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            MongoDatabase db = MongoDBConnection.getDatabase();
+            MongoCollection<Document> products = db.getCollection("products");
 
-            String sql = "INSERT INTO products (product_name, description, category, price, stock_quantity, image, seller_id) "
-                       + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            Document doc = new Document("product_name", productName)
+                    .append("description", productDescription)
+                    .append("category", category)
+                    .append("price", price)
+                    .append("stock_quantity", stockQuantity)
+                    .append("seller_id", sellerId)
+                    .append("created_at", new java.util.Date());
 
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, productName);
-            stmt.setString(2, productDescription);
-            stmt.setString(3, category);
-            stmt.setDouble(4, price);
-            stmt.setInt(5, stockQuantity);
-
-            if (imageStream != null) {
-                stmt.setBlob(6, imageStream);
-            } else {
-                stmt.setNull(6, Types.BLOB);
+            if (imageBytes != null) {
+                doc.append("image", new Binary(imageBytes));
             }
 
-            stmt.setInt(7, sellerId);
+            products.insertOne(doc);
+            message = "Product uploaded successfully!";
 
-            int row = stmt.executeUpdate();
-            if (row > 0) {
-                message = "Product uploaded successfully!";
-            } else {
-                message = "Failed to upload product.";
-            }
-
-            stmt.close();
-            conn.close();
-
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             message = "ERROR: " + ex.getMessage();
         }
 
         // Send back message to JSP for display
         request.setAttribute("message", message);
-        // Forward the user to the JSP page with the message
         request.getRequestDispatcher("/jsp/product_upload.jsp").forward(request, response);
     }
 }

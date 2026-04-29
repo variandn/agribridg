@@ -1,6 +1,6 @@
-<%@ page import="java.sql.*" %>
-<%@ page import="jakarta.servlet.*" %>
-<%@ page import="jakarta.servlet.http.*" %>
+<%@ page import="com.mongodb.client.*, com.mongodb.client.model.*, org.bson.Document, org.bson.types.ObjectId, Servlets.MongoDBConnection, com.mongodb.MongoWriteException" %>
+<%@ page import="Servlets.PasswordUtils, Servlets.HtmlUtils" %>
+<%@ page import="jakarta.servlet.*, jakarta.servlet.http.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -44,12 +44,16 @@
             text-align: center;
             font-size: 16px;
             margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
         }
         .message.success {
-            color: green;
+            color: white;
+            background-color: #28a745;
         }
         .message.error {
-            color: red;
+            color: white;
+            background-color: #dc3545;
         }
     </style>
 </head>
@@ -57,6 +61,7 @@
 
 <%
     String message = "";
+    String messageClass = "";
     boolean registrationSuccess = false;
 
     if ("POST".equalsIgnoreCase(request.getMethod())) {
@@ -72,54 +77,52 @@
         String password = request.getParameter("password");
         String confirmpassword = request.getParameter("confirm_password");
 
-        String dbURL = "jdbc:mysql://localhost:3306/agribridge";
-        String dbUser = "root";
-        String dbPass = "variandn4";
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(dbURL, dbUser, dbPass);
-
             if (username != null && email != null && password != null && password.equals(confirmpassword)) {
-                String sql = "INSERT INTO users (role, user_name, first_name, last_name, email, phone, gender, address, country, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                stmt = conn.prepareStatement(sql);
-                stmt.setString(1, role);
-                stmt.setString(2, username);
-                stmt.setString(3, firstname);
-                stmt.setString(4, lastname);
-                stmt.setString(5, email);
-                stmt.setString(6, phone);
-                stmt.setString(7, gender);
-                stmt.setString(8, address);
-                stmt.setString(9, country);
-                stmt.setString(10, password);
+                MongoDatabase db = MongoDBConnection.getDatabase();
+                MongoCollection<Document> users = db.getCollection("users");
 
-                int rows = stmt.executeUpdate();
-                if (rows > 0) {
-                    registrationSuccess = true;
-                    message = "Registration successful!";
+                // Hash the password before storing
+                String hashedPassword = PasswordUtils.hashPassword(password);
+
+                Document newUser = new Document("role", role)
+                        .append("user_name", username)
+                        .append("first_name", firstname)
+                        .append("last_name", lastname)
+                        .append("email", email)
+                        .append("phone", phone)
+                        .append("gender", gender)
+                        .append("address", address)
+                        .append("country", country)
+                        .append("password", hashedPassword)
+                        .append("created_at", new java.util.Date());
+
+                users.insertOne(newUser);
+                registrationSuccess = true;
+                message = "Registration successful!";
+                messageClass = "success";
+            } else {
+                message = "All fields are required and passwords must match.";
+                messageClass = "error";
+            }
+        } catch (MongoWriteException e) {
+            messageClass = "error";
+            if (e.getCode() == 11000) {
+                String errorMsg = e.getMessage();
+                if (errorMsg.contains("user_name")) {
+                    message = "Username already exists. Please choose a different one.";
+                } else if (errorMsg.contains("email")) {
+                    message = "This email is already registered. Try logging in or use another email.";
                 } else {
-                    message = "<div class='message error'>❌ Registration failed. Please try again.</div>";
+                    message = "An account with these details already exists.";
                 }
             } else {
-                message = "<div class='message error'>⚠️ All fields are required and passwords must match.</div>";
+                message = "A registration error occurred. Please try again later.";
             }
-        } catch (SQLException e) {
-            if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("User_name_UNIQUE")) {
-                message = "<div class='message error'>❌ Username already exists. Please choose a different one.</div>";
-            } else if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("email")) {
-                message = "<div class='message error'>❌ This email is already registered. Try logging in or use another email.</div>";
-            } else {
-                message = "<div class='message error'>❌ Database error: " + e.getMessage() + "</div>";
-            }
-        } catch (ClassNotFoundException e) {
-            message = "<div class='message error'>❌ JDBC Driver not found. Please check your server setup.</div>";
-        } finally {
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            message = "A registration error occurred. Please try again later.";
+            messageClass = "error";
         }
     }
 %>
@@ -149,11 +152,10 @@
         </select>
 
         <input type="text" name="address" placeholder="Address" required />
-       <!-- <input type="text" name="country" placeholder="Country" required />-->
         <label for="country">Country</label>
         <select id="country" name="country" required>
             <option value="">-- Select Country --</option>
-             <option value="kenya">Uganda</option>
+            <option value="uganda">Uganda</option>
             <option value="kenya">Kenya</option>
             <option value="nigeria">Nigeria</option>
             <option value="india">India</option>
@@ -167,24 +169,16 @@
         <button type="submit">Register</button>
     </form>
 
-    <%= message %>
+    <% if (!message.isEmpty()) { %>
+        <div class="message <%= HtmlUtils.escape(messageClass) %>"><%= HtmlUtils.escape(message) %></div>
+    <% } %>
 </div>
 
 <% if (registrationSuccess) { %>
 <script>
-    const popup = window.open("", "RegistrationSuccess", "width=400,height=200");
-    popup.document.write(`
-        <html>
-        <head><title>Success</title></head>
-        <body style='font-family: Arial; text-align: center; padding-top: 50px;'>
-            <h3 style='color: green;'>✅ Registration Successful!</h3>
-            <p>You will be redirected to login shortly...</p>
-        </body>
-        </html>
-    `);
     setTimeout(() => {
-        window.location.href = '../jsp/Login.jsp';
-    }, 3000); // Redirect in 3 seconds
+        window.location.href = 'Login.jsp';
+    }, 2000);
 </script>
 <% } %>
 
