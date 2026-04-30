@@ -123,8 +123,18 @@
             e.printStackTrace();
             MongoDBConnection.reset();
             String uri = System.getenv("MONGODB_URI");
+            String pwdLen = "?";
+            if (uri != null && uri.contains(":") && uri.contains("@")) {
+                // Extract password between the second ":" and "@"
+                int userStart = uri.indexOf("://") + 3;
+                int colonPos = uri.indexOf(":", userStart);
+                int atPos = uri.indexOf("@", colonPos);
+                if (colonPos > 0 && atPos > colonPos) {
+                    pwdLen = String.valueOf(atPos - colonPos - 1);
+                }
+            }
             String masked = (uri != null) ? uri.replaceAll("://([^:]+):([^@]+)@", "://$1:****@") : "NULL";
-            message = "DEBUG: " + e.getClass().getSimpleName() + " | URI: " + masked;
+            message = "DEBUG: " + e.getClass().getSimpleName() + " | PWD_LEN=" + pwdLen + " | URI: " + masked;
             messageClass = "error";
         }
     }
