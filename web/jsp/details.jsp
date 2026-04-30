@@ -39,10 +39,7 @@
         </div>
         <div>
             <% if (loggedIn) { %>
-                <a href="<%= contextPath %>/jsp/Log_out.jsp">Logout</a>
-            <% } else { %>
-                <a href="<%= contextPath %>/jsp/Login.jsp">Login</a>
-                <a href="<%= contextPath %>/jsp/register.jsp">Register</a>
+                <span>Welcome, <%= HtmlUtils.escape(usernameSess) %></span>
             <% } %>
         </div>
     </div>
@@ -63,11 +60,9 @@
             <button type="submit">🔍</button>
         </form>
         <div class="header-actions">
-            <% if (loggedIn) { %>
-                <a href="<%= contextPath %>/jsp/Log_out.jsp"><span class="icon">👤</span><span><%= HtmlUtils.escape(usernameSess) %></span></a>
-            <% } else { %>
-                <a href="<%= contextPath %>/jsp/Login.jsp"><span class="icon">👤</span><span>Account</span></a>
-            <% } %>
+            <a href="<%= loggedIn ? contextPath + "/jsp/Log_out.jsp" : contextPath + "/jsp/Login.jsp" %>">
+                <span class="icon">👤</span>
+            </a>
         </div>
     </div>
 </header>
