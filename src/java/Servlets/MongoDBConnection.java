@@ -14,18 +14,6 @@ import com.mongodb.client.model.Indexes;
  */
 public class MongoDBConnection {
 
-    // Reads from MONGODB_URI environment variable (set in Render, or locally via IDE/shell)
-    private static final String CONNECTION_STRING = getRequiredEnv("MONGODB_URI");
-
-    private static String getRequiredEnv(String name) {
-        String value = System.getenv(name);
-        if (value == null || value.isEmpty()) {
-            System.err.println("ERROR: Environment variable " + name + " is not set.");
-            System.err.println("Set it in your IDE run configuration or shell before starting Tomcat.");
-        }
-        return value;
-    }
-
     private static final String DATABASE_NAME = "agribridge";
 
     private static MongoClient mongoClient = null;
@@ -37,7 +25,15 @@ public class MongoDBConnection {
      */
     public static synchronized MongoDatabase getDatabase() {
         if (mongoClient == null) {
-            mongoClient = MongoClients.create(CONNECTION_STRING);
+            String connStr = System.getenv("MONGODB_URI");
+            if (connStr == null || connStr.isEmpty()) {
+                throw new RuntimeException("MONGODB_URI environment variable is not set");
+            }
+            // Debug: log that we're connecting (mask the password)
+            String masked = connStr.replaceAll("://([^:]+):([^@]+)@", "://$1:****@");
+            System.out.println("Connecting to MongoDB: " + masked);
+            
+            mongoClient = MongoClients.create(connStr);
         }
 
         MongoDatabase db = mongoClient.getDatabase(DATABASE_NAME);
@@ -61,6 +57,17 @@ public class MongoDBConnection {
         }
 
         return db;
+    }
+    
+    /**
+     * Force reconnect on next getDatabase() call.
+     * Useful if credentials change or connection fails.
+     */
+    public static synchronized void reset() {
+        if (mongoClient != null) {
+            try { mongoClient.close(); } catch (Exception ignored) {}
+            mongoClient = null;
+        }
     }
 
     /**

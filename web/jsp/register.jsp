@@ -121,7 +121,9 @@
             }
         } catch (Exception e) {
             e.printStackTrace();
-            message = "DEBUG: " + e.getClass().getName() + " - " + e.getMessage();
+            MongoDBConnection.reset(); // Force fresh connection next time
+            String envCheck = System.getenv("MONGODB_URI") != null ? "SET (len=" + System.getenv("MONGODB_URI").length() + ")" : "NOT SET";
+            message = "DEBUG: " + e.getClass().getName() + " - " + e.getMessage() + " | ENV: " + envCheck;
             messageClass = "error";
         }
     }
