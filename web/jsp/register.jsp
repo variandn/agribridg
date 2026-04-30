@@ -121,9 +121,10 @@
             }
         } catch (Exception e) {
             e.printStackTrace();
-            MongoDBConnection.reset(); // Force fresh connection next time
-            String envCheck = System.getenv("MONGODB_URI") != null ? "SET (len=" + System.getenv("MONGODB_URI").length() + ")" : "NOT SET";
-            message = "DEBUG: " + e.getClass().getName() + " - " + e.getMessage() + " | ENV: " + envCheck;
+            MongoDBConnection.reset();
+            String uri = System.getenv("MONGODB_URI");
+            String masked = (uri != null) ? uri.replaceAll("://([^:]+):([^@]+)@", "://$1:****@") : "NULL";
+            message = "DEBUG: " + e.getClass().getSimpleName() + " | URI: " + masked;
             messageClass = "error";
         }
     }
