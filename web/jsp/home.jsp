@@ -143,9 +143,7 @@
                                                                                     <button type="submit">🔍</button>
                                                                                 </form>
                                                                                 <div class="header-actions">
-                                                                                    <a href="<%= loggedIn ? contextPath + "
-                                                                                        /jsp/Log_out.jsp" : contextPath
-                                                                                        + "/jsp/Login.jsp" %>">
+                                                                                    <a href="<%= loggedIn ? contextPath + "/jsp/Log_out.jsp" : contextPath + "/jsp/Login.jsp" %>">
                                                                                         <span class="icon">👤</span>
                                                                                     </a>
                                                                                 </div>
@@ -277,9 +275,7 @@
                                                                                             categoryCounts.getOrDefault(cat,
                                                                                             0);
                                                                                             %>
-                                                                                            <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
-                                                                                                UTF-8") %>"
-                                                                                                class="category-card">
+                                                                                            <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>" class="category-card">
                                                                                                 <div
                                                                                                     class="category-icon">
                                                                                                     <%= icon %>
@@ -319,8 +315,7 @@
                                                                                                 </li>
                                                                                                 <% for (String cat :
                                                                                                     categories) { %>
-                                                                                                    <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
-                                                                                                            UTF-8") %>">
+                                                                                                    <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>">
                                                                                                             <%= HtmlUtils.escape(cat)
                                                                                                                 %>
                                                                                                         </a>
@@ -366,8 +361,7 @@
                                                                                                         : categories) {
                                                                                                         if (tabCount>=
                                                                                                         3) break; %>
-                                                                                                        <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
-                                                                                                            UTF-8") %>">
+                                                                                                        <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>">
                                                                                                             <button>
                                                                                                                 <%= HtmlUtils.escape(cat)
                                                                                                                     %>
@@ -483,10 +477,7 @@
                                                                                                                             Now
                                                                                                                             →</button>
                                                                                                                     </form>
-                                                                                                                    <a href="<%= contextPath %>/jsp/product_sellers.jsp?productName=<%= java.net.URLEncoder.encode(name, "
-                                                                                                                        UTF-8")
-                                                                                                                        %>"
-                                                                                                                        class="btn-sellers">View
+                                                                                                                    <a href="<%= contextPath %>/jsp/product_sellers.jsp?productName=<%= java.net.URLEncoder.encode(name, "UTF-8") %>" class="btn-sellers">View
                                                                                                                         All
                                                                                                                         Sellers</a>
                                                                                                                 </div>
@@ -647,9 +638,7 @@
                                                                                                             (footCatCount>
                                                                                                             = 5) break;
                                                                                                             %>
-                                                                                                            <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
-                                                                                                                    UTF-8")
-                                                                                                                    %>">
+                                                                                                            <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>">
                                                                                                                     <%= HtmlUtils.escape(cat)
                                                                                                                         %>
                                                                                                                 </a>
@@ -665,6 +654,7 @@
                                                                                                             687 268</li>
                                                                                                         <li>✉️
                                                                                                             info@agribridge.com
+
                                                                                                         </li>
                                                                                                         <li>Mukono,
                                                                                                             Uganda</li>
