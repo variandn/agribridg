@@ -121,7 +121,7 @@
             }
         } catch (Exception e) {
             e.printStackTrace();
-            message = "A registration error occurred. Please try again later.";
+            message = "DEBUG: " + e.getClass().getName() + " - " + e.getMessage();
             messageClass = "error";
         }
     }
