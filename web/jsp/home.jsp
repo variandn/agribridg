@@ -417,10 +417,7 @@
                                                                                                             stock > 10 ?
                                                                                                             "In Stock" :
                                                                                                             (stock > 0 ?
-                                                                                                            "Only " +
-                                                                                                            stock + "
-                                                                                                            left" : "Out
-                                                                                                            of Stock");
+                                                                                                            "Only " + stock + " left" : "Out of Stock");
                                                                                                             %>
                                                                                                             <div
                                                                                                                 class="product-card">
