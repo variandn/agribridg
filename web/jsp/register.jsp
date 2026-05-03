@@ -13,123 +13,292 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{
-            --primary:#2ecc71;--primary-dark:#27ae60;--primary-deeper:#1e8449;
-            --accent-orange:#ff8c00;--dark:#1a1a2e;--dark-secondary:#2c3e50;
-            --text:#333;--text-light:#666;--text-muted:#999;
-            --bg:#f8faf9;--bg-section:#f0f4f1;--white:#ffffff;
-            --border:#e8ede9;--radius:12px;--radius-sm:8px;
-            --error-bg:#FFF0F0;--error-text:#D93025;--error-border:#FECACA;
-            --success-bg:#EDFBF0;--success-text:#1e8449;--success-border:#A7F3D0;
-            --shadow-sm:0 2px 8px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.1);
-            --transition:all .3s cubic-bezier(.4,0,.2,1);
+        :root {
+            --primary: hsl(145, 63%, 49%);
+            --primary-light: hsl(145, 63%, 65%);
+            --primary-dark: hsl(145, 63%, 35%);
+            --accent: hsl(33, 100%, 50%);
+            --dark: hsl(240, 30%, 15%);
+            --dark-soft: hsl(240, 20%, 25%);
+            --white: #ffffff;
+            --bg: hsl(150, 20%, 98%);
+            --text: hsl(240, 10%, 20%);
+            --text-light: hsl(240, 10%, 45%);
+            --border: hsl(150, 10%, 90%);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --error: #ff4757;
+            --success: #2ed573;
         }
-        html{font-size:16px;-webkit-font-smoothing:antialiased}
-        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;display:flex;background:var(--bg)}
 
-        .register-page{display:flex;width:100%;min-height:100vh}
-
-        /* === Brand Panel === */
-        .brand-panel{flex:0 0 42%;background:linear-gradient(160deg,var(--primary-deeper) 0%,var(--primary-dark) 30%,var(--dark-secondary) 70%,var(--dark) 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3rem;position:relative;overflow:hidden}
-        .brand-panel::before{content:'';position:absolute;top:-30%;left:-20%;width:500px;height:500px;background:radial-gradient(circle,rgba(255,140,0,.12) 0%,transparent 70%);border-radius:50%;animation:pulseGlow 6s ease-in-out infinite alternate}
-        .brand-panel::after{content:'';position:absolute;bottom:-25%;right:-15%;width:400px;height:400px;background:radial-gradient(circle,rgba(46,204,113,.15) 0%,transparent 70%);border-radius:50%;animation:pulseGlow 8s ease-in-out infinite alternate-reverse}
-        @keyframes pulseGlow{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.2);opacity:1}}
-
-        .float-el{position:absolute;border-radius:50%;opacity:.07;background:#fff}
-        .float-el:nth-child(1){width:80px;height:80px;top:12%;left:15%;animation:floatAnim 8s ease-in-out infinite}
-        .float-el:nth-child(2){width:50px;height:50px;top:60%;left:70%;animation:floatAnim 10s ease-in-out infinite 2s}
-        .float-el:nth-child(3){width:30px;height:30px;top:35%;left:80%;animation:floatAnim 7s ease-in-out infinite 4s}
-        .float-el:nth-child(4){width:60px;height:60px;top:75%;left:25%;animation:floatAnim 9s ease-in-out infinite 1s}
-        @keyframes floatAnim{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-30px) rotate(10deg)}}
-
-        .brand-content{position:relative;z-index:2;text-align:center;color:#fff;max-width:400px}
-        .brand-logo{font-size:2.2rem;font-weight:800;letter-spacing:-.5px;margin-bottom:1.5rem;color:var(--white)}
-        .brand-logo span{color:var(--primary)}
-        .brand-tagline{font-size:1.8rem;font-weight:700;line-height:1.25;margin-bottom:1rem}
-        .brand-desc{font-size:.95rem;line-height:1.7;color:rgba(255,255,255,.65);margin-bottom:2.5rem}
-        .trust-badges{display:flex;gap:2rem;justify-content:center}
-        .trust-badge .badge-num{display:block;font-size:1.6rem;font-weight:800;color:var(--accent-orange)}
-        .trust-badge .badge-lbl{font-size:.75rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px}
-
-        /* === Form Panel === */
-        .form-panel{flex:1;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:2rem 2.5rem;background:var(--bg);overflow-y:auto}
-        .register-card{width:100%;max-width:520px;animation:slideUp .6s cubic-bezier(.16,1,.3,1);padding-top:1rem;padding-bottom:2rem}
-        @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-
-        .mobile-logo{display:none;font-size:1.5rem;font-weight:800;color:var(--dark);margin-bottom:1.5rem}
-        .mobile-logo span{color:var(--primary)}
-        .back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--text-muted);font-size:.85rem;text-decoration:none;margin-bottom:1.2rem;transition:var(--transition)}
-        .back-link:hover{color:var(--primary)}
-
-        .card-header{margin-bottom:1.2rem}
-        .card-header h1{font-size:1.6rem;font-weight:700;color:var(--dark);margin-bottom:.3rem}
-        .card-header p{color:var(--text-light);font-size:.9rem}
-
-        /* Required indicator */
-        .required{color:var(--error-text);margin-left:2px}
-        .required-note{font-size:.78rem;color:var(--text-muted);margin-bottom:1.2rem;display:flex;align-items:center;gap:.3rem}
-        .required-note span{color:var(--error-text);font-weight:700}
-
-        /* Form */
-        .form-row{display:flex;gap:1rem}
-        .form-row .form-group{flex:1}
-        .form-group{margin-bottom:1rem}
-        .form-group label{display:block;font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.35rem}
-        .form-group input[type="text"],.form-group input[type="email"],.form-group input[type="password"],.form-group input[type="tel"],.form-group select,.form-group textarea{
-            width:100%;padding:.7rem .85rem;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.9rem;font-family:inherit;color:var(--text);background:var(--white);transition:var(--transition);outline:none}
-        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,204,113,.12)}
-        .form-group textarea{resize:vertical;min-height:55px}
-        .form-group select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-
-        /* Radio Buttons */
-        .radio-group{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.3rem}
-        .radio-option{position:relative}
-        .radio-option input[type="radio"]{position:absolute;opacity:0;width:0;height:0}
-        .radio-option label{display:flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:.85rem;font-weight:500;color:var(--text-light);background:var(--white);transition:var(--transition)}
-        .radio-option input[type="radio"]:checked + label{border-color:var(--primary);background:rgba(46,204,113,.06);color:var(--primary-deeper)}
-        .radio-option label:hover{border-color:var(--primary-dark);background:rgba(46,204,113,.03)}
-        .radio-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0}
-        .radio-option input[type="radio"]:checked + label .radio-dot{border-color:var(--primary)}
-        .radio-option input[type="radio"]:checked + label .radio-dot::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--primary);animation:dotPop .3s ease}
-        @keyframes dotPop{0%{transform:scale(0)}100%{transform:scale(1)}}
-
-        /* Submit */
-        .btn-register{width:100%;padding:.85rem;background:var(--primary);color:var(--white);font-family:inherit;font-size:1rem;font-weight:600;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);margin-top:.5rem;box-shadow:0 4px 15px rgba(46,204,113,.3)}
-        .btn-register:hover{background:var(--primary-dark);transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,204,113,.4)}
-        .btn-register:active{transform:translateY(0)}
-
-        /* Messages */
-        .msg{padding:.8rem 1rem;border-radius:var(--radius-sm);font-size:.88rem;text-align:center;margin-bottom:1rem;animation:shake .4s ease-in-out}
-        .msg.error{background:var(--error-bg);border:1px solid var(--error-border);color:var(--error-text)}
-        .msg.success{background:var(--success-bg);border:1px solid var(--success-border);color:var(--success-text)}
-        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
-        .form-footer{text-align:center;margin-top:1.3rem;font-size:.9rem;color:var(--text-light)}
-        .form-footer a{color:var(--primary-dark);font-weight:600;text-decoration:none;transition:var(--transition)}
-        .form-footer a:hover{color:var(--primary-deeper);text-decoration:underline}
-
-        .pw-strength{height:4px;border-radius:2px;background:#eee;margin-top:.35rem;overflow:hidden}
-        .pw-strength .pw-bar{height:100%;width:0;border-radius:2px;transition:width .3s,background .3s}
-
-        /* === Responsive === */
-        @media(max-width:1024px){.brand-panel{flex:0 0 38%;padding:2rem}.brand-tagline{font-size:1.5rem}}
-        @media(max-width:768px){
-            body{overflow:auto}.register-page{flex-direction:column}
-            .brand-panel{flex:none;padding:2rem 1.5rem 1.5rem}
-            .brand-desc{display:none}.brand-tagline{font-size:1.3rem}
-            .form-panel{flex:none;padding:1.5rem 1.2rem 3rem}
-            .register-card{max-width:100%}.mobile-logo{display:block}
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
-        @media(max-width:480px){
-            .brand-panel{padding:1.5rem 1rem}.brand-logo{font-size:1.5rem}.brand-tagline{font-size:1.1rem}
-            .trust-badges{gap:1rem}.trust-badge .badge-num{font-size:1.3rem}
-            .form-panel{padding:1.2rem 1rem 2.5rem}.card-header h1{font-size:1.3rem}
-            .form-row{flex-direction:column;gap:0}.radio-group{gap:.5rem}
+
+        .register-container {
+            display: grid;
+            grid-template-columns: 45% 55%;
+            min-height: 100vh;
+            width: 100%;
         }
-        @media(max-width:360px){
-            .brand-panel{padding:1rem .8rem}.brand-logo{font-size:1.2rem;margin-bottom:.8rem}
-            .brand-tagline{font-size:.95rem}.card-header h1{font-size:1.15rem}
+
+        /* Brand Section */
+        .brand-section {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-soft) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            position: relative;
+            color: var(--white);
+            overflow: hidden;
+        }
+
+        .brand-section::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -20%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, hsla(145, 63%, 49%, 0.15) 0%, transparent 70%);
+            z-index: 1;
+        }
+
+        .brand-content { position: relative; z-index: 2; text-align: center; }
+        .brand-logo { font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; letter-spacing: -1px; }
+        .brand-logo span { color: var(--primary); }
+        .brand-tagline { font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+        .brand-desc { opacity: 0.7; font-size: 1rem; max-width: 400px; margin: 0 auto 2.5rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .stat-item h3 { font-size: 1.8rem; color: var(--accent); margin-bottom: 0.2rem; }
+        .stat-item p { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; }
+
+        /* Form Section */
+        .form-section {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+        }
+
+        .form-card {
+            width: 100%;
+            max-width: 580px;
+            background: var(--white);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-header { margin-bottom: 2.5rem; }
+        .form-header h1 { font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 0.5rem; }
+        .form-header p { color: var(--text-light); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+        .full-width { grid-column: span 2; }
+
+        .input-group { margin-bottom: 1.5rem; position: relative; }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark-soft);
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+        .input-group input, 
+        .input-group select, 
+        .input-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--bg);
+        }
+
+        .input-group input:focus, 
+        .input-group select:focus, 
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px hsla(145, 63%, 49%, 0.1);
+        }
+
+        /* Real-time validation styles */
+        .input-group.valid input { border-color: var(--success); }
+        .input-group.invalid input { border-color: var(--error); }
+        .error-msg {
+            color: var(--error);
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+            height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+            opacity: 0;
+        }
+        .input-group.invalid .error-msg { height: auto; opacity: 1; margin-top: 0.5rem; }
+
+        /* Password Strength */
+        .pw-strength-container { margin-top: 0.5rem; }
+        .pw-strength-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            display: flex;
+            gap: 2px;
+        }
+        .pw-strength-segment { flex: 1; height: 100%; transition: var(--transition); background: transparent; }
+        .pw-text { font-size: 0.75rem; margin-top: 0.4rem; font-weight: 600; }
+
+        /* File Upload */
+        .file-upload-wrapper {
+            border: 2px dashed var(--border);
+            padding: 1.5rem;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg);
+        }
+        .file-upload-wrapper:hover { border-color: var(--primary); background: hsla(145, 63%, 49%, 0.05); }
+        .file-upload-wrapper i { font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 0.5rem; }
+        .file-upload-input { display: none; }
+
+        /* Custom Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+            cursor: pointer;
+        }
+        .checkbox-group input { display: none; }
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            transition: var(--transition);
+            position: relative;
+        }
+        .checkbox-group input:checked + .checkbox-custom {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .checkbox-group input:checked + .checkbox-custom::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+        .checkbox-label { font-size: 0.85rem; color: var(--text-light); }
+        .checkbox-label a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 4px 15px hsla(145, 63%, 49%, 0.3);
+        }
+        .btn-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px hsla(145, 63%, 49%, 0.4);
+        }
+        .btn-submit:disabled { background: var(--text-light); cursor: not-allowed; transform: none; }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Message Styles */
+        .msg {
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: slideDown 0.4s ease-out;
+        }
+        @keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+        .msg.error { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; }
+        .msg.success { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; }
+
+        /* Shake animation for invalid */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .shake { animation: shake 0.4s ease-in-out; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .register-container { grid-template-columns: 1fr; }
+            .brand-section { padding: 3rem 2rem; }
+            .form-section { padding: 2rem 1.5rem; }
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            .form-card { padding: 2rem 1.5rem; }
         }
     </style>
 </head>
@@ -140,20 +309,42 @@
     String messageClass = "";
     boolean registrationSuccess = false;
 
-    if ("POST".equalsIgnoreCase(request.getMethod())) {
-        String username = request.getParameter("username");
-        String role = request.getParameter("userType");
-        String firstname = request.getParameter("firstname");
-        String lastname = request.getParameter("lastname");
-        String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
-        String gender = request.getParameter("gender");
-        String address = request.getParameter("address");
-        String country = request.getParameter("country");
-        String password = request.getParameter("password");
-        String confirmpassword = request.getParameter("confirm_password");
+    // Use a flag to check if we should process multipart
+    boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/form-data");
 
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
         try {
+            String username, role, firstname, lastname, email, phone, gender, country, password, confirmpassword, language;
+            
+            if (isMultipart) {
+                // Handling multipart manually or assuming multipart-config is enabled in web.xml
+                // For now, let's use getParameter if available, but if it's null, we'd need getPart().getParameter() equivalent
+                // In Jakarta EE 10, if <multipart-config> is in web.xml, getParameter() still works!
+                username = request.getParameter("username");
+                role = request.getParameter("userType");
+                firstname = request.getParameter("firstname");
+                lastname = request.getParameter("lastname");
+                email = request.getParameter("email");
+                phone = request.getParameter("phone");
+                gender = request.getParameter("gender");
+                country = request.getParameter("country");
+                password = request.getParameter("password");
+                confirmpassword = request.getParameter("confirm_password");
+                language = request.getParameter("language");
+            } else {
+                username = request.getParameter("username");
+                role = request.getParameter("userType");
+                firstname = request.getParameter("firstname");
+                lastname = request.getParameter("lastname");
+                email = request.getParameter("email");
+                phone = request.getParameter("phone");
+                gender = request.getParameter("gender");
+                country = request.getParameter("country");
+                password = request.getParameter("password");
+                confirmpassword = request.getParameter("confirm_password");
+                language = request.getParameter("language");
+            }
+
             if (username != null && email != null && password != null && password.equals(confirmpassword)) {
                 MongoDatabase db = MongoDBConnection.getDatabase();
                 MongoCollection<Document> users = db.getCollection("users");
@@ -166,8 +357,8 @@
                         .append("email", email)
                         .append("phone", phone)
                         .append("gender", gender)
-                        .append("address", address)
                         .append("country", country)
+                        .append("language", language)
                         .append("password", hashedPassword)
                         .append("created_at", new java.util.Date());
 
@@ -183,158 +374,176 @@
             messageClass = "error";
             if (e.getCode() == 11000) {
                 String errorMsg = e.getMessage();
-                if (errorMsg.contains("user_name")) {
-                    message = "Username already exists. Please choose a different one.";
-                } else if (errorMsg.contains("email")) {
-                    message = "This email is already registered. Try logging in or use another email.";
-                } else {
-                    message = "An account with these details already exists.";
-                }
+                if (errorMsg.contains("user_name")) message = "Username already exists.";
+                else if (errorMsg.contains("email")) message = "Email already registered.";
+                else message = "Account details already exist.";
             } else {
-                message = "A registration error occurred. Please try again later.";
+                message = "A registration error occurred.";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            MongoDBConnection.reset();
-            String uri = System.getenv("MONGODB_URI");
-            String pwdLen = "?";
-            if (uri != null && uri.contains(":") && uri.contains("@")) {
-                int userStart = uri.indexOf("://") + 3;
-                int colonPos = uri.indexOf(":", userStart);
-                int atPos = uri.indexOf("@", colonPos);
-                if (colonPos > 0 && atPos > colonPos) {
-                    pwdLen = String.valueOf(atPos - colonPos - 1);
-                }
-            }
-            String masked = (uri != null) ? uri.replaceAll("://([^:]+):([^@]+)@", "://$1:****@") : "NULL";
-            message = "DEBUG: " + e.getClass().getSimpleName() + " | PWD_LEN=" + pwdLen + " | URI: " + masked;
+            message = "An unexpected error occurred: " + e.getMessage();
             messageClass = "error";
         }
     }
 %>
 
-<div class="register-page">
-    <!-- Brand Panel -->
-    <div class="brand-panel">
-        <div class="float-el"></div><div class="float-el"></div><div class="float-el"></div><div class="float-el"></div>
+<div class="register-container">
+    <div class="brand-section">
         <div class="brand-content">
             <div class="brand-logo">AGRI<span>BRIDGE</span></div>
-            <h2 class="brand-tagline">Start Your Journey With Us.</h2>
-            <p class="brand-desc">Create your account and connect with farmers, buyers, and sellers across Africa on a platform built for trust.</p>
-            <div class="trust-badges">
-                <div class="trust-badge"><span class="badge-num">2K+</span><span class="badge-lbl">Farmers</span></div>
-                <div class="trust-badge"><span class="badge-num">50+</span><span class="badge-lbl">Products</span></div>
-                <div class="trust-badge"><span class="badge-num">99%</span><span class="badge-lbl">Satisfaction</span></div>
+            <h2 class="brand-tagline">Join Africa's Most Trusted Agricultural Network</h2>
+            <p class="brand-desc">Connect with verified farmers, buyers, and suppliers. Real data, real trust, real growth.</p>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>2K+</h3>
+                    <p>Farmers</p>
+                </div>
+                <div class="stat-item">
+                    <h3>50+</h3>
+                    <p>Products</p>
+                </div>
+                <div class="stat-item">
+                    <h3>99%</h3>
+                    <p>Satisfaction</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Form Panel -->
-    <div class="form-panel">
-        <div class="register-card">
-            <a href="home.jsp" class="back-link">&#8592; Back to Home</a>
-            <div class="mobile-logo">AGRI<span>BRIDGE</span></div>
-            <div class="card-header">
-                <h1>Create Your Account</h1>
-                <p>Fill in the details below to get started</p>
+    <div class="form-section">
+        <div class="form-card" id="formCard">
+            <a href="home.jsp" style="display:inline-block; margin-bottom:1.5rem; color:var(--text-light); text-decoration:none; font-size:0.85rem;">← Back to Home</a>
+            
+            <div class="form-header">
+                <h1>Create Account</h1>
+                <p>Enter your details to start your journey</p>
             </div>
-
-            <div class="required-note"><span>*</span> indicates a required field</div>
 
             <% if (!message.isEmpty()) { %>
                 <div class="msg <%= HtmlUtils.escape(messageClass) %>"><%= HtmlUtils.escape(message) %></div>
             <% } %>
 
-            <form method="post" action="register.jsp" id="registerForm">
-                <div class="form-group">
-                    <label for="userType">Registering as <span class="required">*</span></label>
-                    <select id="userType" name="userType" required>
-                        <option value="">-- Select Role --</option>
-                        <option value="buyer">Buyer</option>
-                        <option value="seller">Seller</option>
-                    </select>
-                </div>
+            <form method="post" action="register.jsp" id="registerForm" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label for="userType">I am a</label>
+                        <select id="userType" name="userType" required>
+                            <option value="">Choose Role...</option>
+                            <option value="buyer">Buyer</option>
+                            <option value="seller">Seller</option>
+                        </select>
+                    </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstname">First Name <span class="required">*</span></label>
+                    <div class="input-group">
+                        <label for="firstname">First Name</label>
                         <input type="text" id="firstname" name="firstname" placeholder="John" required>
+                        <div class="error-msg">First name is required</div>
                     </div>
-                    <div class="form-group">
-                        <label for="lastname">Last Name <span class="required">*</span></label>
+
+                    <div class="input-group">
+                        <label for="lastname">Last Name</label>
                         <input type="text" id="lastname" name="lastname" placeholder="Doe" required>
+                        <div class="error-msg">Last name is required</div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="username">Username <span class="required">*</span></label>
-                    <input type="text" id="username" name="username" placeholder="Choose a unique username" required>
-                </div>
+                    <div class="input-group full-width">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="johndoe24" required>
+                        <div class="error-msg">Username must be at least 4 characters</div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
-                </div>
+                    <div class="input-group full-width">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="john@example.com" required>
+                        <div class="error-msg">Please enter a valid email address</div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="phone">Phone Number <span class="required">*</span></label>
-                    <input type="tel" id="phone" name="phone" placeholder="+256 7XX XXX XXX" required>
-                </div>
+                    <div class="input-group full-width">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+256 700 000000" required>
+                        <div class="error-msg">Valid phone number required</div>
+                    </div>
 
-                <div class="form-group">
-                    <label>Gender <span class="required">*</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="gender-male" name="gender" value="male" required>
-                            <label for="gender-male"><span class="radio-dot"></span> Male</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="gender-female" name="gender" value="female">
-                            <label for="gender-female"><span class="radio-dot"></span> Female</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="gender-other" name="gender" value="other">
-                            <label for="gender-other"><span class="radio-dot"></span> Other</label>
+                    <div class="input-group">
+                        <label>Gender</label>
+                        <div class="radio-group" style="display:flex; gap:1rem; margin-top:0.5rem;">
+                            <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; cursor:pointer;">
+                                <input type="radio" name="gender" value="male" checked> Male
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; cursor:pointer;">
+                                <input type="radio" name="gender" value="female"> Female
+                            </label>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <textarea id="address" name="address" rows="2" placeholder="Enter your address"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="country">Country <span class="required">*</span></label>
-                    <select id="country" name="country" required>
-                        <option value="">-- Select Country --</option>
-                        <option value="uganda">Uganda</option>
-                        <option value="kenya">Kenya</option>
-                        <option value="nigeria">Nigeria</option>
-                        <option value="india">India</option>
-                        <option value="uk">United Kingdom</option>
-                        <option value="usa">United States</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="password">Password <span class="required">*</span></label>
-                        <input type="password" id="password" name="password" placeholder="Min. 6 characters" required minlength="6">
-                        <div class="pw-strength"><div class="pw-bar" id="pwBar"></div></div>
+                    <div class="input-group">
+                        <label for="language">Language</label>
+                        <select id="language" name="language">
+                            <option value="english">English</option>
+                            <option value="luganda">Luganda</option>
+                            <option value="swahili">Swahili</option>
+                            <option value="french">French</option>
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm Password <span class="required">*</span></label>
-                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+
+                    <div class="input-group full-width">
+                        <label for="country">Country</label>
+                        <select id="country" name="country" required>
+                            <option value="">Select Country...</option>
+                            <option value="uganda">Uganda</option>
+                            <option value="kenya">Kenya</option>
+                            <option value="nigeria">Nigeria</option>
+                            <option value="india">India</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Profile Picture</label>
+                        <div class="file-upload-wrapper" onclick="document.getElementById('profilePic').click()">
+                            <i style="font-style:normal; font-size:1.5rem; color:var(--primary); display:block; margin-bottom:0.5rem;">↑</i>
+                            <span id="fileName">Click to upload image (JPG, PNG)</span>
+                            <input type="file" id="profilePic" name="profilePic" class="file-upload-input" accept=".jpg,.jpeg,.png" onchange="updateFileName(this)">
+                        </div>
+                        <div class="error-msg" id="fileError">Invalid file type or size</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        <div class="pw-strength-container">
+                            <div class="pw-strength-bar" id="pwBar">
+                                <div class="pw-strength-segment"></div>
+                                <div class="pw-strength-segment"></div>
+                                <div class="pw-strength-segment"></div>
+                                <div class="pw-strength-segment"></div>
+                            </div>
+                            <div class="pw-text" id="pwText">Strength: <span style="color:var(--text-light)">None</span></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirm_password">Confirm</label>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                        <div class="error-msg">Passwords do not match</div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-register">Create Account</button>
+                <label class="checkbox-group">
+                    <input type="checkbox" name="terms" id="terms" required>
+                    <div class="checkbox-custom"></div>
+                    <span class="checkbox-label">I agree to the <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a></span>
+                </label>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="spinner" id="spinner"></span>
+                    <span id="btnText">Create Account</span>
+                </button>
             </form>
 
-            <div class="form-footer">
-                Already have an account? <a href="Login.jsp">Sign In</a>
+            <div style="text-align:center; margin-top:2rem; font-size:0.9rem; color:var(--text-light)">
+                Already have an account? <a href="Login.jsp" style="color:var(--primary); font-weight:700; text-decoration:none;">Sign In</a>
             </div>
         </div>
     </div>
@@ -345,10 +554,107 @@
 <% } %>
 
 <script>
-    var pwInput=document.getElementById('password'),pwBar=document.getElementById('pwBar');
-    if(pwInput&&pwBar){pwInput.addEventListener('input',function(){var v=this.value,s=0;if(v.length>=6)s++;if(v.length>=10)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;pwBar.style.width=(s/5)*100+'%';pwBar.style.background=s<=1?'#ef4444':s<=3?'#f59e0b':'#22c55e';})}
-    document.getElementById('registerForm').addEventListener('submit',function(e){if(document.getElementById('password').value!==document.getElementById('confirm_password').value){e.preventDefault();alert('Passwords do not match!')}});
-</script>
+    function updateFileName(input) {
+        const fileName = input.files[0] ? input.files[0].name : "Click to upload image (JPG, PNG)";
+        document.getElementById('fileName').textContent = fileName;
+        
+        if (input.files[0]) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            const validExts = ['jpg', 'jpeg', 'png'];
+            const fileGroup = input.closest('.input-group');
+            if (!validExts.includes(ext)) {
+                fileGroup.classList.add('invalid');
+                document.getElementById('fileError').textContent = "Only JPG and PNG are allowed";
+                input.value = '';
+            } else {
+                fileGroup.classList.remove('invalid');
+            }
+        }
+    }
 
+    const form = document.getElementById('registerForm');
+    const inputs = form.querySelectorAll('input, select');
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', () => validateInput(input));
+        input.addEventListener('blur', () => validateInput(input));
+    });
+
+    function validateInput(input) {
+        const group = input.closest('.input-group');
+        if (!group) return true;
+
+        let isValid = true;
+        if (input.required && !input.value) isValid = false;
+        else if (input.type === 'email' && input.value) {
+            isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+        } else if (input.id === 'username' && input.value) {
+            isValid = input.value.length >= 4;
+        } else if (input.id === 'password') {
+            updatePasswordStrength(input.value);
+            isValid = input.value.length >= 6;
+        } else if (input.id === 'confirm_password') {
+            isValid = input.value === document.getElementById('password').value;
+        } else if (input.id === 'phone' && input.value) {
+            isValid = /^\+?[\d\s-]{10,}$/.test(input.value);
+        }
+
+        if (isValid) {
+            group.classList.remove('invalid');
+            if(input.value) group.classList.add('valid');
+        } else {
+            group.classList.remove('valid');
+            group.classList.add('invalid');
+        }
+        return isValid;
+    }
+
+    function updatePasswordStrength(pw) {
+        const bar = document.getElementById('pwBar');
+        const segments = bar.querySelectorAll('.pw-strength-segment');
+        const text = document.getElementById('pwText').querySelector('span');
+        
+        let strength = 0;
+        if (pw.length >= 6) strength++;
+        if (pw.length >= 10) strength++;
+        if (/[A-Z]/.test(pw)) strength++;
+        if (/[0-9]/.test(pw)) strength++;
+        if (/[^A-Za-z0-9]/.test(pw)) strength++;
+
+        const colors = ['#ff4757', '#ffa502', '#2ed573', '#2ed573'];
+        const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+        
+        segments.forEach((seg, i) => {
+            seg.style.background = (i < strength) ? colors[Math.min(strength - 1, 3)] : 'var(--border)';
+        });
+
+        if (strength > 0) {
+            text.textContent = labels[Math.min(strength - 1, 3)];
+            text.style.color = colors[Math.min(strength - 1, 3)];
+        } else {
+            text.textContent = 'None';
+            text.style.color = 'var(--text-light)';
+        }
+    }
+
+    form.addEventListener('submit', function(e) {
+        let isFormValid = true;
+        inputs.forEach(input => {
+            if (!validateInput(input)) isFormValid = false;
+        });
+
+        if (!isFormValid) {
+            e.preventDefault();
+            const card = document.getElementById('formCard');
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 400);
+            return;
+        }
+
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('btnText').textContent = 'Processing...';
+    });
+</script>
 </body>
 </html>

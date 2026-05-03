@@ -23,6 +23,23 @@
         <url-pattern>/getImage</url-pattern>
     </servlet-mapping>
     
+    <!-- RegisterJSP Multipart Config -->
+    <servlet>
+        <servlet-name>RegisterJSP</servlet-name>
+        <jsp-file>/jsp/register.jsp</jsp-file>
+        <multipart-config>
+            <location>/tmp</location>
+            <max-file-size>10485760</max-file-size> <!-- 10MB -->
+            <max-request-size>20971520</max-request-size> <!-- 20MB -->
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegisterJSP</servlet-name>
+        <url-pattern>/jsp/register.jsp</url-pattern>
+    </servlet-mapping>
+
+    
     <!-- Welcome file -->
     <welcome-file-list>
         <welcome-file>/jsp/home.jsp</welcome-file>
