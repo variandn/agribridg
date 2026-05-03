@@ -21,10 +21,11 @@ public class ImageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getParameter("id");
 
-        if (productId == null || productId.isEmpty()) {
+        if (productId == null || productId.trim().isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing product ID");
             return;
         }
+        productId = productId.trim();
 
         System.out.println("Fetching image for product ID: " + productId);
 
@@ -37,8 +38,14 @@ public class ImageServlet extends HttpServlet {
             Document doc = products.find(Filters.eq("_id", new ObjectId(productId))).first();
 
             if (doc != null && doc.get("image") != null) {
-                Binary binary = doc.get("image", Binary.class);
-                imageBytes = binary.getData();
+                Object imgObj = doc.get("image");
+                if (imgObj instanceof Binary) {
+                    imageBytes = ((Binary) imgObj).getData();
+                } else if (imgObj instanceof byte[]) {
+                    imageBytes = (byte[]) imgObj;
+                } else {
+                    System.out.println("Unexpected image data type: " + imgObj.getClass().getName());
+                }
             }
         } catch (IllegalArgumentException e) {
             // Invalid ObjectId format

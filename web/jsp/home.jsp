@@ -4,7 +4,9 @@
     <%@ page import="Servlets.HtmlUtils" %>
         <%@ page import="java.util.*" %>
             <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-                <% // Fetch data from MongoDB List<Document> featuredProducts = new ArrayList<>();
+                <% 
+                        // Fetch data from MongoDB 
+                        List<Document> featuredProducts = new ArrayList<>();
                         List<Document> dealProducts = new ArrayList<>();
                                 List<String> categories = new ArrayList<>();
                                         Map<String, Integer> categoryCounts = new LinkedHashMap<>();
@@ -424,27 +426,13 @@
                                                                                                             instanceof
                                                                                                             Number)
                                                                                                             stock=((Number)stockObj).intValue();
-                                                                                                            String
-                                                                                                            stockClass=stock>
-                                                                                                            10 ?
-                                                                                                            "in-stock" :
-                                                                                                            (stock > 0 ?
-                                                                                                            "low-stock"
-                                                                                                            : "");
-                                                                                                            String
-                                                                                                            stockText =
-                                                                                                            "Out of
-                                                                                                            Stock";
-                                                                                                            if (stock >
-                                                                                                            10)
-                                                                                                            stockText =
-                                                                                                            "In Stock";
-                                                                                                            else if
-                                                                                                            (stock > 0)
-                                                                                                            stockText =
-                                                                                                            "Only " +
-                                                                                                            stock + "
-                                                                                                            left";
+                                                                                                            String stockClass = stock > 10 ? "in-stock" : (stock > 0 ? "low-stock" : "");
+                                                                                                            String stockText = "Out of Stock";
+                                                                                                            if (stock > 10) {
+                                                                                                                stockText = "In Stock";
+                                                                                                            } else if (stock > 0) {
+                                                                                                                stockText = "Only " + stock + " left";
+                                                                                                            }
                                                                                                             %>
                                                                                                             <div
                                                                                                                 class="product-card">

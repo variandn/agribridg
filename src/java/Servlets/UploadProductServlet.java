@@ -15,27 +15,6 @@ public class UploadProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Retrieve form fields
-        String productName = request.getParameter("productName");
-        String productDescription = request.getParameter("productDescription");
-        String category = request.getParameter("category");
-        double price = Double.parseDouble(request.getParameter("productPrice"));
-        int stockQuantity = Integer.parseInt(request.getParameter("productStock"));
-
-        // Retrieve file part
-        Part filePart = request.getPart("productImage");
-        byte[] imageBytes = null;
-        if (filePart != null && filePart.getSize() > 0) {
-            InputStream is = filePart.getInputStream();
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            int nRead;
-            byte[] data = new byte[16384];
-            while ((nRead = is.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, nRead);
-            }
-            imageBytes = buffer.toByteArray();
-        }
-
         // Get seller ID from session (stored during login as a String)
         HttpSession session = request.getSession(false);
         String sellerId = null;
@@ -53,8 +32,29 @@ public class UploadProductServlet extends HttpServlet {
             return;
         }
 
-        // Insert into MongoDB
         try {
+            // Retrieve form fields
+            String productName = request.getParameter("productName");
+            String productDescription = request.getParameter("productDescription");
+            String category = request.getParameter("category");
+            double price = Double.parseDouble(request.getParameter("productPrice"));
+            int stockQuantity = Integer.parseInt(request.getParameter("productStock"));
+
+            // Retrieve file part
+            Part filePart = request.getPart("productImage");
+            byte[] imageBytes = null;
+            if (filePart != null && filePart.getSize() > 0) {
+                InputStream is = filePart.getInputStream();
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                int nRead;
+                byte[] data = new byte[16384];
+                while ((nRead = is.read(data, 0, data.length)) != -1) {
+                    buffer.write(data, 0, nRead);
+                }
+                imageBytes = buffer.toByteArray();
+            }
+
+            // Insert into MongoDB
             MongoDatabase db = MongoDBConnection.getDatabase();
             MongoCollection<Document> products = db.getCollection("products");
 
@@ -73,6 +73,9 @@ public class UploadProductServlet extends HttpServlet {
             products.insertOne(doc);
             message = "Product uploaded successfully!";
 
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            message = "ERROR: Invalid number format for price or stock.";
         } catch (Exception ex) {
             ex.printStackTrace();
             message = "ERROR: " + ex.getMessage();
