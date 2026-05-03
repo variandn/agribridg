@@ -632,15 +632,11 @@
                                                                                                 <div class="footer-col">
                                                                                                     <h4>Categories</h4>
                                                                                                     <ul>
-                                                                                                        <% int
-                                                                                                            footCatCount=0;
-                                                                                                            for (String
-                                                                                                            cat :
-                                                                                                            categories)
-                                                                                                            { if
-                                                                                                            (footCatCount>
-                                                                                                            = 5) break;
-                                                                                                            %>
+                                                                                                        <% 
+                                                                                                            int footCatCount=0;
+                                                                                                            for (String cat : categories) {
+                                                                                                                if (footCatCount >= 5) break;
+                                                                                                        %>
                                                                                                             <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>">
                                                                                                                     <%= HtmlUtils.escape(cat)
                                                                                                                         %>
