@@ -431,9 +431,20 @@
                                                                                                             (stock > 0 ?
                                                                                                             "low-stock"
                                                                                                             : "");
-                                                                                                            String stockText = "Out of Stock";
-                                                                                                            if (stock > 10) stockText = "In Stock";
-                                                                                                            else if (stock > 0) stockText = "Only " + stock + " left";
+                                                                                                            String
+                                                                                                            stockText =
+                                                                                                            "Out of
+                                                                                                            Stock";
+                                                                                                            if (stock >
+                                                                                                            10)
+                                                                                                            stockText =
+                                                                                                            "In Stock";
+                                                                                                            else if
+                                                                                                            (stock > 0)
+                                                                                                            stockText =
+                                                                                                            "Only " +
+                                                                                                            stock + "
+                                                                                                            left";
                                                                                                             %>
                                                                                                             <div
                                                                                                                 class="product-card">
@@ -652,7 +663,9 @@
                                                                                                             for (String
                                                                                                             cat :
                                                                                                             categories)
-                                                                                                            { if (footCatCount >= 5) break;
+                                                                                                            { if
+                                                                                                            (footCatCount>
+                                                                                                            = 5) break;
                                                                                                             %>
                                                                                                             <% String
                                                                                                                 encCat4=java.net.URLEncoder.encode(cat, "UTF-8"
