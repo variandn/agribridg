@@ -9,7 +9,6 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.Binary;
 
-@WebServlet("/servlets/UploadProductServlet")
 @MultipartConfig(maxFileSize = 16177215) // 16MB max for file upload
 public class UploadProductServlet extends HttpServlet {
 
@@ -27,7 +26,14 @@ public class UploadProductServlet extends HttpServlet {
         Part filePart = request.getPart("productImage");
         byte[] imageBytes = null;
         if (filePart != null && filePart.getSize() > 0) {
-            imageBytes = filePart.getInputStream().readAllBytes();
+            InputStream is = filePart.getInputStream();
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int nRead;
+            byte[] data = new byte[16384];
+            while ((nRead = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            imageBytes = buffer.toByteArray();
         }
 
         // Get seller ID from session (stored during login as a String)

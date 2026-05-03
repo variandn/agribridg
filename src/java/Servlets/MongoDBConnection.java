@@ -32,7 +32,7 @@ public class MongoDBConnection {
             // Debug: log that we're connecting (mask the password)
             String masked = connStr.replaceAll("://([^:]+):([^@]+)@", "://$1:****@");
             System.out.println("Connecting to MongoDB: " + masked);
-            
+
             mongoClient = MongoClients.create(connStr);
         }
 
@@ -42,13 +42,11 @@ public class MongoDBConnection {
         if (!indexesCreated) {
             try {
                 db.getCollection("users").createIndex(
-                    Indexes.ascending("user_name"),
-                    new IndexOptions().unique(true)
-                );
+                        Indexes.ascending("user_name"),
+                        new IndexOptions().unique(true));
                 db.getCollection("users").createIndex(
-                    Indexes.ascending("email"),
-                    new IndexOptions().unique(true)
-                );
+                        Indexes.ascending("email"),
+                        new IndexOptions().unique(true));
                 indexesCreated = true;
             } catch (Exception e) {
                 // Indexes may already exist, that's fine
@@ -58,14 +56,17 @@ public class MongoDBConnection {
 
         return db;
     }
-    
+
     /**
      * Force reconnect on next getDatabase() call.
      * Useful if credentials change or connection fails.
      */
     public static synchronized void reset() {
         if (mongoClient != null) {
-            try { mongoClient.close(); } catch (Exception ignored) {}
+            try {
+                mongoClient.close();
+            } catch (Exception ignored) {
+            }
             mongoClient = null;
         }
     }
