@@ -143,10 +143,13 @@
                                                                                     <button type="submit">🔍</button>
                                                                                 </form>
                                                                                 <div class="header-actions">
-                                                                                    <% String authUrl = loggedIn ? contextPath + "/jsp/Log_out.jsp" : contextPath + "/jsp/Login.jsp"; %>
-                                                                                    <a href="<%= authUrl %>">
-                                                                                        <span class="icon">👤</span>
-                                                                                    </a>
+                                                                                    <% String authUrl=loggedIn ?
+                                                                                        contextPath + "/jsp/Log_out.jsp"
+                                                                                        : contextPath + "/jsp/Login.jsp"
+                                                                                        ; %>
+                                                                                        <a href="<%= authUrl %>">
+                                                                                            <span class="icon">👤</span>
+                                                                                        </a>
                                                                                 </div>
                                                                             </div>
                                                                         </header>
@@ -278,22 +281,25 @@
                                                                                             categoryCounts.getOrDefault(cat,
                                                                                             0);
                                                                                             %>
-                                                                                            <% String encCat1 = java.net.URLEncoder.encode(cat, "UTF-8"); %>
-                                                                                            <a href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat1 %>"
-                                                                                                class="category-card">
-                                                                                                <div
-                                                                                                    class="category-icon">
-                                                                                                    <%= icon %>
-                                                                                                </div>
-                                                                                                <h4>
-                                                                                                    <%= HtmlUtils.escape(cat)
-                                                                                                        %>
-                                                                                                </h4>
-                                                                                                <span class="count">
-                                                                                                    <%= count %> items
-                                                                                                </span>
-                                                                                            </a>
-                                                                                            <% } %>
+                                                                                            <% String
+                                                                                                encCat1=java.net.URLEncoder.encode(cat, "UTF-8"
+                                                                                                ); %>
+                                                                                                <a href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat1 %>"
+                                                                                                    class="category-card">
+                                                                                                    <div
+                                                                                                        class="category-icon">
+                                                                                                        <%= icon %>
+                                                                                                    </div>
+                                                                                                    <h4>
+                                                                                                        <%= HtmlUtils.escape(cat)
+                                                                                                            %>
+                                                                                                    </h4>
+                                                                                                    <span class="count">
+                                                                                                        <%= count %>
+                                                                                                            items
+                                                                                                    </span>
+                                                                                                </a>
+                                                                                                <% } %>
                                                                                     </div>
                                                                                 </div>
                                                                             </section>
@@ -320,13 +326,16 @@
                                                                                                 </li>
                                                                                                 <% for (String cat :
                                                                                                     categories) { %>
-                                                                                                    <% String encCat2 = java.net.URLEncoder.encode(cat, "UTF-8"); %>
-                                                                                                    <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat2 %>">
-                                                                                                            <%= HtmlUtils.escape(cat)
-                                                                                                                %>
-                                                                                                        </a>
-                                                                                                    </li>
-                                                                                                    <% } %>
+                                                                                                    <% String
+                                                                                                        encCat2=java.net.URLEncoder.encode(cat, "UTF-8"
+                                                                                                        ); %>
+                                                                                                        <li><a
+                                                                                                                href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat2 %>">
+                                                                                                                <%= HtmlUtils.escape(cat)
+                                                                                                                    %>
+                                                                                                            </a>
+                                                                                                        </li>
+                                                                                                        <% } %>
                                                                                             </ul>
                                                                                         </aside>
 
@@ -367,15 +376,18 @@
                                                                                                         : categories) {
                                                                                                         if (tabCount>=
                                                                                                         3) break; %>
-                                                                                                        <% String encCat3 = java.net.URLEncoder.encode(cat, "UTF-8"); %>
-                                                                                                        <a href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat3 %>">
-                                                                                                            <button>
-                                                                                                                <%= HtmlUtils.escape(cat)
-                                                                                                                    %>
-                                                                                                            </button>
-                                                                                                        </a>
-                                                                                                        <% tabCount++; }
-                                                                                                            %>
+                                                                                                        <% String
+                                                                                                            encCat3=java.net.URLEncoder.encode(cat, "UTF-8"
+                                                                                                            ); %>
+                                                                                                            <a
+                                                                                                                href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat3 %>">
+                                                                                                                <button>
+                                                                                                                    <%= HtmlUtils.escape(cat)
+                                                                                                                        %>
+                                                                                                                </button>
+                                                                                                            </a>
+                                                                                                            <% tabCount++;
+                                                                                                                } %>
                                                                                                 </div>
                                                                                             </div>
 
@@ -419,8 +431,7 @@
                                                                                                             (stock > 0 ?
                                                                                                             "low-stock"
                                                                                                             : "");
-                                                                                                            String
-                                                                                                            stockText = "Out of Stock";
+                                                                                                            String stockText = "Out of Stock";
                                                                                                             if (stock > 10) stockText = "In Stock";
                                                                                                             else if (stock > 0) stockText = "Only " + stock + " left";
                                                                                                             %>
@@ -479,11 +490,14 @@
                                                                                                                             Now
                                                                                                                             →</button>
                                                                                                                     </form>
-                                                                                                                    <% String encName1 = java.net.URLEncoder.encode(name, "UTF-8"); %>
-                                                                                                                    <a href="<%= contextPath %>/jsp/product_sellers.jsp?productName=<%= encName1 %>"
-                                                                                                                        class="btn-sellers">View
-                                                                                                                        All
-                                                                                                                        Sellers</a>
+                                                                                                                    <% String
+                                                                                                                        encName1=java.net.URLEncoder.encode(name, "UTF-8"
+                                                                                                                        );
+                                                                                                                        %>
+                                                                                                                        <a href="<%= contextPath %>/jsp/product_sellers.jsp?productName=<%= encName1 %>"
+                                                                                                                            class="btn-sellers">View
+                                                                                                                            All
+                                                                                                                            Sellers</a>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                             <% } %>
@@ -638,17 +652,19 @@
                                                                                                             for (String
                                                                                                             cat :
                                                                                                             categories)
-                                                                                                            { if
-                                                                                                            (footCatCount >= 5) break;
+                                                                                                            { if (footCatCount >= 5) break;
                                                                                                             %>
-                                                                                                            <% String encCat4 = java.net.URLEncoder.encode(cat, "UTF-8"); %>
-                                                                                                            <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat4 %>">
-                                                                                                                    <%= HtmlUtils.escape(cat)
-                                                                                                                        %>
-                                                                                                                </a>
-                                                                                                            </li>
-                                                                                                            <% footCatCount++;
-                                                                                                                } %>
+                                                                                                            <% String
+                                                                                                                encCat4=java.net.URLEncoder.encode(cat, "UTF-8"
+                                                                                                                ); %>
+                                                                                                                <li><a
+                                                                                                                        href="<%= contextPath %>/jsp/home.jsp?category=<%= encCat4 %>">
+                                                                                                                        <%= HtmlUtils.escape(cat)
+                                                                                                                            %>
+                                                                                                                    </a>
+                                                                                                                </li>
+                                                                                                                <% footCatCount++;
+                                                                                                                    } %>
                                                                                                     </ul>
                                                                                                 </div>
                                                                                                 <div class="footer-col">
