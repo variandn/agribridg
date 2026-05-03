@@ -143,9 +143,7 @@
                                                                                     <button type="submit">🔍</button>
                                                                                 </form>
                                                                                 <div class="header-actions">
-                                                                                    <a href="<%= loggedIn ? contextPath + \"
-                                                                                        /jsp/Log_out.jsp\" : contextPath
-                                                                                        + \"/jsp/Login.jsp\" %>">
+                                                                                    <a href="<%= loggedIn ? contextPath + \"/jsp/Log_out.jsp\" : contextPath + \"/jsp/Login.jsp\" %>">
                                                                                         <span class="icon">👤</span>
                                                                                     </a>
                                                                                 </div>
