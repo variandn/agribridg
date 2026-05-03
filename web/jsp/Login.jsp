@@ -703,7 +703,7 @@
 
                                 <div class="form-panel">
                                     <div class="login-card">
-                                        <a href="jsp/home.jsp" class="back-link">&#8592; Back to Home</a>
+                                        <a href="home.jsp" class="back-link">&#8592; Back to Home</a>
                                         <div class="mobile-logo">AGRI<span>BRIDGE</span></div>
                                         <div class="card-header">
                                             <h1>Welcome Back</h1>

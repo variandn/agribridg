@@ -4,10 +4,8 @@
     <%@ page import="Servlets.HtmlUtils" %>
         <%@ page import="java.util.*" %>
             <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-                <%
-                    // Fetch data from MongoDB
-                    List<Document> featuredProducts = new ArrayList<>();
-                    List<Document> dealProducts = new ArrayList<>();
+                <% // Fetch data from MongoDB List<Document> featuredProducts = new ArrayList<>();
+                        List<Document> dealProducts = new ArrayList<>();
                                 List<String> categories = new ArrayList<>();
                                         Map<String, Integer> categoryCounts = new LinkedHashMap<>();
                                                 String query = request.getParameter("query");
@@ -145,7 +143,9 @@
                                                                                     <button type="submit">🔍</button>
                                                                                 </form>
                                                                                 <div class="header-actions">
-                                                                                    <a href="<%= loggedIn ? contextPath + "/jsp/Log_out.jsp" : contextPath + "/jsp/Login.jsp" %>">
+                                                                                    <a href="<%= loggedIn ? contextPath + "
+                                                                                        /jsp/Log_out.jsp" : contextPath
+                                                                                        + "/jsp/Login.jsp" %>">
                                                                                         <span class="icon">👤</span>
                                                                                     </a>
                                                                                 </div>
@@ -279,7 +279,8 @@
                                                                                             categoryCounts.getOrDefault(cat,
                                                                                             0);
                                                                                             %>
-                                                                                            <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>"
+                                                                                            <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
+                                                                                                UTF-8") %>"
                                                                                                 class="category-card">
                                                                                                 <div
                                                                                                     class="category-icon">
@@ -320,7 +321,8 @@
                                                                                                 </li>
                                                                                                 <% for (String cat :
                                                                                                     categories) { %>
-                                                                                                    <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>">
+                                                                                                    <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
+                                                                                                            UTF-8") %>">
                                                                                                             <%= HtmlUtils.escape(cat)
                                                                                                                 %>
                                                                                                         </a>
@@ -366,7 +368,8 @@
                                                                                                         : categories) {
                                                                                                         if (tabCount>=
                                                                                                         3) break; %>
-                                                                                                        <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>">
+                                                                                                        <a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
+                                                                                                            UTF-8") %>">
                                                                                                             <button>
                                                                                                                 <%= HtmlUtils.escape(cat)
                                                                                                                     %>
@@ -422,7 +425,10 @@
                                                                                                             stock > 10 ?
                                                                                                             "In Stock" :
                                                                                                             (stock > 0 ?
-                                                                                                            "Only " + stock + " left" : "Out of Stock");
+                                                                                                            "Only " +
+                                                                                                            stock + "
+                                                                                                            left" : "Out
+                                                                                                            of Stock");
                                                                                                             %>
                                                                                                             <div
                                                                                                                 class="product-card">
@@ -479,7 +485,9 @@
                                                                                                                             Now
                                                                                                                             →</button>
                                                                                                                     </form>
-                                                                                                                    <a href="<%= contextPath %>/jsp/product_sellers.jsp?productName=<%= java.net.URLEncoder.encode(name, "UTF-8") %>"
+                                                                                                                    <a href="<%= contextPath %>/jsp/product_sellers.jsp?productName=<%= java.net.URLEncoder.encode(name, "
+                                                                                                                        UTF-8")
+                                                                                                                        %>"
                                                                                                                         class="btn-sellers">View
                                                                                                                         All
                                                                                                                         Sellers</a>
@@ -632,12 +640,18 @@
                                                                                                 <div class="footer-col">
                                                                                                     <h4>Categories</h4>
                                                                                                     <ul>
-                                                                                                        <% 
-                                                                                                            int footCatCount=0;
-                                                                                                            for (String cat : categories) {
-                                                                                                                if (footCatCount >= 5) break;
-                                                                                                        %>
-                                                                                                            <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "UTF-8") %>">
+                                                                                                        <% int
+                                                                                                            footCatCount=0;
+                                                                                                            for (String
+                                                                                                            cat :
+                                                                                                            categories)
+                                                                                                            { if
+                                                                                                            (footCatCount>
+                                                                                                            = 5) break;
+                                                                                                            %>
+                                                                                                            <li><a href="<%= contextPath %>/jsp/home.jsp?category=<%= java.net.URLEncoder.encode(cat, "
+                                                                                                                    UTF-8")
+                                                                                                                    %>">
                                                                                                                     <%= HtmlUtils.escape(cat)
                                                                                                                         %>
                                                                                                                 </a>
