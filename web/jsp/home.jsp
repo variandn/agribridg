@@ -4,7 +4,9 @@
     <%@ page import="Servlets.HtmlUtils" %>
         <%@ page import="java.util.*" %>
             <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-                <% // Fetch data from MongoDB List<Document> featuredProducts = new ArrayList<>();
+                <% 
+                        // Fetch data from MongoDB 
+                        List<Document> featuredProducts = new ArrayList<>();
                         List<Document> dealProducts = new ArrayList<>();
                                 List<String> categories = new ArrayList<>();
                                         Map<String, Integer> categoryCounts = new LinkedHashMap<>();
